@@ -6,7 +6,7 @@ namespace mr {
     class OutputWriter {
       public: 
         virtual void collect(KeyValuePair&) = 0;
-    }
+    };
 
 }
 

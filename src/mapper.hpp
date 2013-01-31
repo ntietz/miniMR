@@ -1,15 +1,26 @@
 #ifndef _MAPPER_HPP_
 #define _MAPPER_HPP_
 
+#include <functional>
+#include "keyvaluepair.hpp"
+#include "outputwriter.hpp"
+
 namespace mr {
 
-    class Mapper {
-    public:
-        
+    typedef std::function<void(KeyValuePair&,OutputWriter&)> MapFunction;
 
-    private:
-        // TODO lambda that does the mapping
+    class Mapper {
+      public:
+        Mapper(OutputWriter*);
+
+      private:
+        MapFunction mapFunction;
+        OutputWriter* collector;
     };
+
+    Mapper::Mapper(OutputWriter* collector_) {
+        collector = collector_;
+    }
 
 }
 

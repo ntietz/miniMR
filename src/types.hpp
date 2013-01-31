@@ -2,6 +2,7 @@
 #define _TYPES_HPP_
 
 #include <vector>
+#include "keyvaluepair.hpp"
 
 namespace mr {
     typedef char int8;

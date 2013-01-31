@@ -3,6 +3,14 @@
 
 namespace mr {
 
+    class Partitioner {
+      public:
+        Partitioner() { }
+
+      private:
+        // TODO
+    };
+
 }
 
 #endif

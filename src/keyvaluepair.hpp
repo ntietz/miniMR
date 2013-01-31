@@ -1,6 +1,7 @@
 #ifndef _KEYVALUEPAIR_HPP_
 #define _KEYVALUEPAIR_HPP_
 
+#include <vector>
 #include "types.hpp"
 
 namespace mr {
@@ -19,16 +20,17 @@ namespace mr {
         bytelist value;
     };
 
-    KeyValuePair( uint8 keyLength_
-                , bytelist key_
-                , uint8 valueLength_
-                , bytelist value_) {
+    KeyValuePair::KeyValuePair( uint8 keyLength_
+                              , bytelist key_
+                              , uint8 valueLength_
+                              , bytelist value_) {
         keyLength = keyLength_;
         key = key_;
         valueLength = valueLength_;
         value = value_;
     }
 
+    typedef std::vector<KeyValuePair> KeyValuePairList;
 
 }
 
