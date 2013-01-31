@@ -8,6 +8,17 @@ namespace mr {
         virtual void collect(KeyValuePair&) = 0;
     };
 
+    class MapperCollector : public OutputWriter {
+      public:
+        void collect(KeyValuePair& pair) {
+            contents.push_back(pair);
+        }
+
+        KeyValuePairList getContents();
+      private:
+        KeyValuePairList contents;
+    };
+
 }
 
 #endif

@@ -6,6 +6,7 @@ namespace mr {
     class InputReader {
       public:
         virtual KeyValuePair& getNext() = 0;
+        virtual bool hasNext() = 0;
     };
 
 }

@@ -7,19 +7,35 @@
 
 namespace mr {
 
-    typedef std::function<void(KeyValuePair&,OutputWriter&)> MapFunction;
+    typedef std::function<void(KeyValuePair&,OutputWriter*)> MapFunction;
 
     class Mapper {
       public:
-        Mapper(OutputWriter*);
+        Mapper(MapFunction,OutputWriter*);
+
+        void submitValue(KeyValuePair&);
+        void submitValues(KeyValuePairList&);
 
       private:
         MapFunction mapFunction;
         OutputWriter* collector;
     };
 
-    Mapper::Mapper(OutputWriter* collector_) {
+    Mapper::Mapper( MapFunction mapFunction_
+                  , OutputWriter* collector_
+                  ) {
+        mapFunction = mapFunction_;
         collector = collector_;
+    }
+
+    void Mapper::submitValue(KeyValuePair& pair) {
+        mapFunction(pair, collector);
+    }
+
+    void Mapper::submitValues(KeyValuePairList& pairs) {
+        for (KeyValuePair pair : pairs) {
+            mapFunction(pair, collector);
+        }
     }
 
 }
