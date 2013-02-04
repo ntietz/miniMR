@@ -8,7 +8,6 @@
 
 namespace mr
 {
-
     typedef std::function<void(KeyValuePair&,OutputCollector*)> MapFunction;
 
     class Mapper
