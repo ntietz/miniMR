@@ -1,6 +1,8 @@
 #ifndef _OUTPUTWRITER_HPP_
 #define _OUTPUTWRITER_HPP_
 
+#include <mutex>
+
 namespace mr {
 
     class OutputCollector {
@@ -8,6 +10,7 @@ namespace mr {
         virtual void collect(KeyValuePair&) = 0;
     };
 
+    // MapperCollector is not synchronized, since each should only be used by one mapper.
     class MapperCollector : public OutputCollector {
       public:
         void collect(KeyValuePair& pair) {
@@ -15,8 +18,10 @@ namespace mr {
         }
 
         KeyValuePairList getContents();
+        // TODO change ^ to receive an iterator, to handle disk caching
       private:
         KeyValuePairList contents;
+        // TODO add flush-to-disk capability
     };
 
 }
