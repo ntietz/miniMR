@@ -2,10 +2,10 @@
 #define _OUTPUTWRITER_HPP_
 
 #include <mutex>
+#include "keyvaluepair.hpp"
 
 namespace mr
 {
-
     class OutputCollector
     {
       public: 
@@ -16,10 +16,7 @@ namespace mr
     class MapperCollector : public OutputCollector
     {
       public:
-        void collect(KeyValuePair& pair)
-        {
-            contents.push_back(pair);
-        }
+        void collect(KeyValuePair& pair);
 
         KeyValuePairList getContents();
         // TODO change ^ to receive an iterator, to handle disk caching
@@ -27,7 +24,6 @@ namespace mr
         KeyValuePairList contents;
         // TODO add flush-to-disk capability
     };
-
 }
 
 #endif

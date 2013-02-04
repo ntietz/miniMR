@@ -10,13 +10,7 @@ namespace mr
     class MapperInput
     {
       public:
-        KeyValuePair* requestNext()
-        {
-            readLock.lock();
-            KeyValuePair* result = getNext();
-            readLock.unlock();
-            return result;
-        }
+        KeyValuePair* requestNext();
 
       private:
         virtual KeyValuePair* getNext() = 0;

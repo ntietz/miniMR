@@ -1,8 +1,18 @@
 #include "gtest/gtest.h"
-// TODO add the other includes
+#include "mapper.hpp"
 
-TEST(foo, bar)
+TEST(MapperTest, AcceptsSubmissions)
 {
-    
+    bool success = false;
+    mr::MapFunction mapFunction = [&success](mr::KeyValuePair& pair, mr::OutputCollector* collector)
+    {
+        success = true;
+    };
+
+    mr::Mapper mapper(mapFunction, 0);
+    mr::KeyValuePair pair;
+    mapper.submit(pair);
+
+    ASSERT_TRUE(success);
 }
 

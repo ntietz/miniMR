@@ -2,16 +2,16 @@
 #define _PARTITION_HPP_
 
 #include <functional>
+#include "types.hpp"
 
 namespace mr
 {
-
     typedef std::function<int(int,bytelist)> PartitionFunction;
 
     class Partitioner
     {
       public:
-        Partitioner() { }
+        Partitioner();
 
       private:
         // TODO

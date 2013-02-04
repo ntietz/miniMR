@@ -6,7 +6,6 @@
 
 namespace mr
 {
-
     /*
      * KeyValuePair is our standard byte-pair.
      */
@@ -19,21 +18,7 @@ namespace mr
         bytelist value;
     };
 
-    KeyValuePair::KeyValuePair()
-    {
-        key = bytelist();
-        value = bytelist();
-    }
-
-    KeyValuePair::KeyValuePair( bytelist key_
-                              , bytelist value_)
-    {
-        key = key_;
-        value = value_;
-    }
-
     typedef std::vector<KeyValuePair> KeyValuePairList;
-
 }
 
 #endif

@@ -20,7 +20,7 @@ TEST_FLAGS = ${COMPILE_OPTS} -I${GTEST_DIR} -I${GTEST_DIR}/include
 GTEST_HEADERS = ${GTEST_DIR}/include/gtest/*.h \
 				${GTEST_DIR}/include/gtest/internal/*.h
 GTEST_SRCS = ${GTEST_DIR}/src/*.cc ${GTEST_DIR}/src/*.h ${GTEST_HEADERS}
-TESTS = mapper_test.o
+TESTS = mapper_test.o reducer_test.o
 
 all : compile tests run_tests
 
@@ -32,8 +32,28 @@ compile : clean init mapreduce
 run_tests : tests
 	bin/tests.out
 
-mapreduce : ${SRC}/job.hpp
-	${COMPILER} ${COMPILE_OPTS} ${SRC}/job.hpp -c -o ${BIN}/mapreduce.o
+mapreduce : mapper reducer inputreader outputwriter job partition keyvaluepair
+
+mapper : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/mapper.cpp -c -o ${BIN}/mapper.o
+
+reducer : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/reducer.cpp -c -o ${BIN}/reducer.o
+
+inputreader : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/inputreader.cpp -c -o ${BIN}/inputreader.o
+
+outputwriter : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/outputwriter.cpp -c -o ${BIN}/outputwriter.o
+
+job : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/job.cpp -c -o ${BIN}/job.o
+
+partition : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/partition.cpp -c -o ${BIN}/partition.o
+
+keyvaluepair : 
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/keyvaluepair.cpp -c -o ${BIN}/keyvaluepair.o
 
 
 
@@ -53,6 +73,9 @@ gtest_main.a : gtest-all.o gtest_main.o
 mapper_test.o : ${TEST_DIR}/mapper_test.cpp mapreduce
 	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/mapper_test.cpp
 
+reducer_test.o : ${TEST_DIR}/reducer_test.cpp mapreduce
+	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/reducer_test.cpp
+
 LINKS = bin/*.o
 tests : ${TESTS} gtest_main.a 
 	${COMPILER} ${TEST_FLAGS} -lpthread $^ bin/*.o -o bin/$@.out
@@ -60,5 +83,8 @@ tests : ${TESTS} gtest_main.a
 
 
 clean :
+	rm -f */*/*.h.gch
 	rm -rf bin
+	rm -f *.o
+	rm -f *.a
 

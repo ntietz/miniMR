@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include "keyvaluepair.hpp"
+#include "inputreader.hpp"
 #include "outputwriter.hpp"
 
 namespace mr
@@ -23,30 +24,7 @@ namespace mr
         OutputCollector* collector;
     };
 
-    Reducer::Reducer( ReduceFunction reduceFunction_
-                    , OutputCollector* collector_
-                    )
-    {
-        reduceFunction = reduceFunction_;
-        collector = collector_;
-    }
-
-    void Reducer::submit(bytelist key, std::vector<bytelist> values)
-    {
-        reduceFunction(key, values, collector);
-    }
-
-    void reducerFunction(Reducer& reducer, ReducerInput& input)
-    {
-        bytelist key;
-        std::vector<bytelist> values;
-
-        while (input.requestNext(key, values))
-        {
-            reducer.submit(key, values);
-        }
-    }
-
+    void reducerFunction(Reducer& reducer, ReducerInput& input);
 }
 
 #endif
