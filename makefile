@@ -20,7 +20,7 @@ TEST_FLAGS = ${COMPILE_OPTS} -I${GTEST_DIR} -I${GTEST_DIR}/include
 GTEST_HEADERS = ${GTEST_DIR}/include/gtest/*.h \
 				${GTEST_DIR}/include/gtest/internal/*.h
 GTEST_SRCS = ${GTEST_DIR}/src/*.cc ${GTEST_DIR}/src/*.h ${GTEST_HEADERS}
-TESTS = mapper_test.o reducer_test.o
+TESTS = mapper_test.o reducer_test.o context_test.o partition_test.o job_test.o keyvaluepair_test.o
 
 all : compile tests run_tests
 
@@ -74,6 +74,18 @@ mapper_test.o : ${TEST_DIR}/mapper_test.cpp mapreduce
 
 reducer_test.o : ${TEST_DIR}/reducer_test.cpp mapreduce
 	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/reducer_test.cpp
+
+context_test.o : ${TEST_DIR}/context_test.cpp mapreduce
+	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/context_test.cpp
+
+partition_test.o : ${TEST_DIR}/partition_test.cpp mapreduce
+	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/partition_test.cpp
+
+job_test.o : ${TEST_DIR}/job_test.cpp mapreduce
+	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/job_test.cpp
+
+keyvaluepair_test.o : ${TEST_DIR}/keyvaluepair_test.cpp mapreduce
+	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/keyvaluepair_test.cpp
 
 LINKS = bin/*.o
 tests : ${TESTS} gtest_main.a 
