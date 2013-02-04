@@ -14,15 +14,50 @@ COMPILE_OPTS= -std=c++11 -I${SRC} -Ilib -Wall
 SRC=src
 BIN=bin
 
-all : compile 
+GTEST_DIR = lib/gtest-1.6.0
+TEST_DIR = test
+TEST_FLAGS = ${COMPILE_OPTS} -I${GTEST_DIR} -I${GTEST_DIR}/include
+GTEST_HEADERS = ${GTEST_DIR}/include/gtest/*.h \
+				${GTEST_DIR}/include/gtest/internal/*.h
+GTEST_SRCS = ${GTEST_DIR}/src/*.cc ${GTEST_DIR}/src/*.h ${GTEST_HEADERS}
+TESTS = mapper_test.o
+
+all : compile tests run_tests
 
 init :
 	mkdir bin
 
 compile : clean init mapreduce
 
+run_tests : tests
+	bin/tests.out
+
 mapreduce : ${SRC}/job.hpp
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/job.hpp -c -o ${BIN}/mapreduce.o
+
+
+
+
+gtest-all.o : ${GTEST_SRCS}
+	${COMPILER} ${TEST_FLAGS} -c ${GTEST_DIR}/src/gtest-all.cc
+
+gtest_main.o : ${GTEST_SRCS}
+	${COMPILER} ${TEST_FLAGS} -c ${GTEST_DIR}/src/gtest_main.cc
+
+gtest.a : gtest-all.o
+	$(AR) $(ARFLAGS) $@ $^
+
+gtest_main.a : gtest-all.o gtest_main.o
+	$(AR) $(ARFLAGS) $@ $^
+
+mapper_test.o : ${TEST_DIR}/mapper_test.cpp mapreduce
+	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/mapper_test.cpp
+
+LINKS = bin/*.o
+tests : ${TESTS} gtest_main.a 
+	${COMPILER} ${TEST_FLAGS} -lpthread $^ bin/*.o -o bin/$@.out
+
+
 
 clean :
 	rm -rf bin
