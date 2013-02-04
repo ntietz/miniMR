@@ -8,21 +8,21 @@
 
 namespace mr {
 
-    typedef std::function<void(KeyValuePair&,OutputWriter*)> MapFunction;
+    typedef std::function<void(KeyValuePair&,OutputCollector*)> MapFunction;
 
     class Mapper {
       public:
-        Mapper(MapFunction,OutputWriter*);
+        Mapper(MapFunction,OutputCollector*);
 
         void submit(KeyValuePair&);
 
       private:
         MapFunction mapFunction;
-        OutputWriter* collector;
+        OutputCollector* collector;
     };
 
     Mapper::Mapper( MapFunction mapFunction_
-                  , OutputWriter* collector_
+                  , OutputCollector* collector_
                   ) {
         mapFunction = mapFunction_;
         collector = collector_;

@@ -3,12 +3,12 @@
 
 namespace mr {
 
-    class OutputWriter {
+    class OutputCollector {
       public: 
         virtual void collect(KeyValuePair&) = 0;
     };
 
-    class MapperCollector : public OutputWriter {
+    class MapperCollector : public OutputCollector {
       public:
         void collect(KeyValuePair& pair) {
             contents.push_back(pair);

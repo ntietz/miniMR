@@ -13,7 +13,7 @@ namespace mr {
 
     class MapReduceJob {
       public:
-        MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,MapperInput*,OutputWriter*);
+        MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,MapperInput*,OutputCollector*);
 
         void run();
 
@@ -29,8 +29,8 @@ namespace mr {
         Mapper** mappers;
         Reducer** reducers;
         MapperInput* inputReader;
-        OutputWriter** mapperCollectors;
-        OutputWriter* reducerCollector;
+        OutputCollector** mapperCollectors;
+        OutputCollector* reducerCollector;
         Partitioner* partitioner;
         */
     };
@@ -41,7 +41,7 @@ namespace mr {
                               , ReduceFunction reduceFunction_
                               , PartitionFunction partitionFunction_
                               , MapperInput* inputReader_
-                              , OutputWriter* reducerCollector_
+                              , OutputCollector* reducerCollector_
                               ) {
         /*
         numMappers = numMappers_;
@@ -53,7 +53,7 @@ namespace mr {
         inputReader = inputReader_;
         reducerCollector = reducerCollector_;
 
-        mapperCollectors = new OutputWriter*[numMappers];
+        mapperCollectors = new OutputCollector*[numMappers];
         mappers = new Mapper*[numMappers];
         for (int i = 0; i < numMappers; ++i) {
             mapperCollectors[i] = new MapperCollector();

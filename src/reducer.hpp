@@ -8,21 +8,21 @@
 
 namespace mr {
 
-    typedef std::function<void(bytelist,std::vector<bytelist>,OutputWriter*)> ReduceFunction;
+    typedef std::function<void(bytelist,std::vector<bytelist>,OutputCollector*)> ReduceFunction;
 
     class Reducer {
       public:
-        Reducer(ReduceFunction,OutputWriter*);
+        Reducer(ReduceFunction,OutputCollector*);
 
         void submit(bytelist, std::vector<bytelist>);
 
       private:
         ReduceFunction reduceFunction;
-        OutputWriter* collector;
+        OutputCollector* collector;
     };
 
     Reducer::Reducer( ReduceFunction reduceFunction_
-                    , OutputWriter* collector_
+                    , OutputCollector* collector_
                     ) {
         reduceFunction = reduceFunction_;
         collector = collector_;
