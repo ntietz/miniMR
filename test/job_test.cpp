@@ -61,7 +61,8 @@ TEST(JobTest, Blank)
                                     , mr::OutputCollector* collector
                                     )
     {
-
+        int& keynum = *((int*) pair.key.data());
+        int& valuenum = *((int*) pair.value.data());
     };
 
     mr::ReduceFunction reduceFunction = []( mr::bytelist key

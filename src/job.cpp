@@ -1,5 +1,6 @@
 #include "job.hpp"
 #include <thread>
+#include <iostream>
 
 namespace mr
 {
@@ -36,15 +37,21 @@ namespace mr
 
     void MapReduceJob::run()
     {
+        std::cout << "Starting MapReduce job...\n";
+
         std::thread* mapThreads = new std::thread[numMappers];
         for (int i = 0; i < numMappers; ++i)
         {
+            std::cout << "> Created thread " << i << std::endl;
             mapThreads[i] = std::thread(mapperFunction, mappers[i], inputReader);
         }
+
+        std::cout << "All mappers running...\n";
 
         for (int i = 0; i < numMappers; ++i)
         {
             mapThreads[i].join();
+            std::cout << "> Thread " << i << " finished" << std::endl;
         }
         /*
             read the input and distribute it to the mappers as we go (in a circular fashion)
