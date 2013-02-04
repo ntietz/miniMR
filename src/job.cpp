@@ -1,4 +1,5 @@
 #include "job.hpp"
+#include <thread>
 
 namespace mr
 {
@@ -11,7 +12,6 @@ namespace mr
                               , OutputCollector* reducerCollector_
                               )
     {
-        /*
         numMappers = numMappers_;
         numReducers = numReducers_;
 
@@ -21,8 +21,8 @@ namespace mr
         inputReader = inputReader_;
         reducerCollector = reducerCollector_;
 
-        mapperCollectors = new OutputCollector*[numMappers];
         mappers = new Mapper*[numMappers];
+        mapperCollectors = new OutputCollector*[numMappers];
         for (int i = 0; i < numMappers; ++i) {
             mapperCollectors[i] = new MapperCollector();
             mappers[i] = new Mapper(mapFunction, mapperCollectors[i]);
@@ -32,11 +32,20 @@ namespace mr
         for (int i = 0; i < numReducers; ++i) {
             reducers[i] = new Reducer(reduceFunction, reducerCollector);
         }
-        */
     }
 
     void MapReduceJob::run()
     {
+        std::thread* mapThreads = new std::thread[numMappers];
+        for (int i = 0; i < numMappers; ++i)
+        {
+            mapThreads[i] = std::thread(mapperFunction, mappers[i], inputReader);
+        }
+
+        for (int i = 0; i < numMappers; ++i)
+        {
+            mapThreads[i].join();
+        }
         /*
             read the input and distribute it to the mappers as we go (in a circular fashion)
             join all the mappers

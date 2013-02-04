@@ -22,7 +22,7 @@ namespace mr
         OutputCollector* collector;
     };
 
-    void mapperFunction(Mapper& mapper, MapperInput& input);
+    void mapperFunction(Mapper* mapper, MapperInput* input);
 }
 
 #endif

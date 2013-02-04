@@ -16,6 +16,7 @@ namespace mr
     {
       public:
         MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,MapperInput*,OutputCollector*);
+        // TODO destructor
 
         void run();
 
@@ -23,18 +24,17 @@ namespace mr
         int numMappers;
         int numReducers;
 
-        /*
         MapFunction mapFunction;
         ReduceFunction reduceFunction;
         PartitionFunction partitionFunction;
 
+        // TODO delete the pointers in the destructor
         Mapper** mappers;
         Reducer** reducers;
         MapperInput* inputReader;
         OutputCollector** mapperCollectors;
         OutputCollector* reducerCollector;
         Partitioner* partitioner;
-        */
     };
 }
 

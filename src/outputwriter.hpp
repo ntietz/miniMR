@@ -8,7 +8,7 @@ namespace mr
 {
     class OutputCollector
     {
-      public: 
+      public:
         virtual void collect(KeyValuePair&) = 0;
     };
 

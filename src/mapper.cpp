@@ -15,16 +15,16 @@ namespace mr
         mapFunction(pair, collector);
     }
 
-    void mapperFunction(Mapper& mapper, MapperInput& input)
+    void mapperFunction(Mapper* mapper, MapperInput* input)
     {
-        KeyValuePair* kvpair = input.requestNext();
+        KeyValuePair* kvpair = input->requestNext();
 
         while (kvpair != 0)
         {
-            mapper.submit(*kvpair);
+            mapper->submit(*kvpair);
 
             delete kvpair;
-            kvpair = input.requestNext();
+            kvpair = input->requestNext();
         }
     }
 }

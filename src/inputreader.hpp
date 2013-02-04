@@ -12,7 +12,7 @@ namespace mr
       public:
         KeyValuePair* requestNext();
 
-      private:
+      protected:
         virtual KeyValuePair* getNext() = 0;
         std::mutex readLock;
     };
