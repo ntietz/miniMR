@@ -23,6 +23,14 @@ namespace mr {
     class ReducerInput {
       public:
         virtual bool requestNext(bytelist&, std::vector<bytelist>&) = 0; // Note: this must be synchronized
+        // TODO change to the following:
+        //  public:
+        //    bytelist* requestNextKey();
+        //    std::vector<bytelist>* getValues(bytelist* key);
+        // 
+        // The private virtual handling will be interesting. Probably this:
+        //  private:
+        //    virtual void getNext(bytelist*&, std::vector<bytelist>*&) = 0;
     };
 
 }
