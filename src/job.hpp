@@ -13,7 +13,7 @@ namespace mr {
 
     class MapReduceJob {
       public:
-        MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,InputReader*,OutputWriter*);
+        MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,MapperInput*,OutputWriter*);
 
         void run();
 
@@ -21,16 +21,18 @@ namespace mr {
         int numMappers;
         int numReducers;
 
+        /*
         MapFunction mapFunction;
         ReduceFunction reduceFunction;
         PartitionFunction partitionFunction;
 
         Mapper** mappers;
         Reducer** reducers;
-        InputReader* inputReader;
+        MapperInput* inputReader;
         OutputWriter** mapperCollectors;
         OutputWriter* reducerCollector;
         Partitioner* partitioner;
+        */
     };
 
     MapReduceJob::MapReduceJob( int numMappers_
@@ -38,9 +40,10 @@ namespace mr {
                               , int numReducers_
                               , ReduceFunction reduceFunction_
                               , PartitionFunction partitionFunction_
-                              , InputReader* inputReader_
+                              , MapperInput* inputReader_
                               , OutputWriter* reducerCollector_
                               ) {
+        /*
         numMappers = numMappers_;
         numReducers = numReducers_;
 
@@ -61,6 +64,7 @@ namespace mr {
         for (int i = 0; i < numReducers; ++i) {
             reducers[i] = new Reducer(reduceFunction, reducerCollector);
         }
+        */
     }
 
     void MapReduceJob::run() {

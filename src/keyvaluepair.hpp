@@ -11,10 +11,16 @@ namespace mr {
      */
     class KeyValuePair {
       public:
+        KeyValuePair();
         KeyValuePair(bytelist, bytelist);
         bytelist key;
         bytelist value;
     };
+
+    KeyValuePair::KeyValuePair() {
+        key = bytelist();
+        value = bytelist();
+    }
 
     KeyValuePair::KeyValuePair( bytelist key_
                               , bytelist value_) {

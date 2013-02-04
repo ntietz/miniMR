@@ -14,7 +14,7 @@ namespace mr {
       public:
         Reducer(ReduceFunction,OutputWriter*);
 
-        void submitValue(bytelist, std::vector<bytelist>);
+        void submit(bytelist, std::vector<bytelist>);
 
       private:
         ReduceFunction reduceFunction;
@@ -28,8 +28,17 @@ namespace mr {
         collector = collector_;
     }
 
-    void Reducer::submitValue(bytelist key, std::vector<bytelist> values) {
+    void Reducer::submit(bytelist key, std::vector<bytelist> values) {
         reduceFunction(key, values, collector);
+    }
+
+    void reducerFunction(Reducer& reducer, ReducerInput& input) {
+        bytelist key;
+        std::vector<bytelist> values;
+
+        while (input.requestNext(key, values)) {
+            reducer.submit(key, values);
+        }
     }
 
 }

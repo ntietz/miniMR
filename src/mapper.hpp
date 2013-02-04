@@ -3,6 +3,7 @@
 
 #include <functional>
 #include "keyvaluepair.hpp"
+#include "inputreader.hpp"
 #include "outputwriter.hpp"
 
 namespace mr {
@@ -13,8 +14,7 @@ namespace mr {
       public:
         Mapper(MapFunction,OutputWriter*);
 
-        void submitValue(KeyValuePair&);
-        void submitValues(KeyValuePairList&);
+        void submit(KeyValuePair&);
 
       private:
         MapFunction mapFunction;
@@ -28,14 +28,20 @@ namespace mr {
         collector = collector_;
     }
 
-    void Mapper::submitValue(KeyValuePair& pair) {
+    void Mapper::submit(KeyValuePair& pair) {
         mapFunction(pair, collector);
     }
 
-    void Mapper::submitValues(KeyValuePairList& pairs) {
-        for (KeyValuePair pair : pairs) {
-            mapFunction(pair, collector);
+    void mapperFunction(Mapper& mapper, MapperInput& input) {
+        KeyValuePair* kvpair = input.requestNext();
+
+        while (kvpair != 0) {
+            mapper.submit(*kvpair);
+
+            delete kvpair;
+            kvpair = input.requestNext();
         }
+
     }
 
 }
