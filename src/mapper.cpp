@@ -26,7 +26,5 @@ namespace mr
             delete kvpair;
             kvpair = input.requestNext();
         }
-
     }
-
 }
