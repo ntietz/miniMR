@@ -3,17 +3,21 @@
 
 #include <mutex>
 
-namespace mr {
+namespace mr
+{
 
-    class OutputCollector {
+    class OutputCollector
+    {
       public: 
         virtual void collect(KeyValuePair&) = 0;
     };
 
     // MapperCollector is not synchronized, since each should only be used by one mapper.
-    class MapperCollector : public OutputCollector {
+    class MapperCollector : public OutputCollector
+    {
       public:
-        void collect(KeyValuePair& pair) {
+        void collect(KeyValuePair& pair)
+        {
             contents.push_back(pair);
         }
 

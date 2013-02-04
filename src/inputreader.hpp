@@ -4,11 +4,14 @@
 #include <mutex>
 #include "keyvaluepair.hpp"
 
-namespace mr {
+namespace mr
+{
 
-    class MapperInput {
+    class MapperInput
+    {
       public:
-        KeyValuePair* requestNext() {
+        KeyValuePair* requestNext()
+        {
             readLock.lock();
             KeyValuePair* result = getNext();
             readLock.unlock();
@@ -20,7 +23,8 @@ namespace mr {
         std::mutex readLock;
     };
 
-    class ReducerInput {
+    class ReducerInput
+    {
       public:
         virtual bool requestNext(bytelist&, std::vector<bytelist>&) = 0; // Note: this must be synchronized
         // TODO change to the following:

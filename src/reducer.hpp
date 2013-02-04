@@ -6,11 +6,13 @@
 #include "keyvaluepair.hpp"
 #include "outputwriter.hpp"
 
-namespace mr {
+namespace mr
+{
 
     typedef std::function<void(bytelist,std::vector<bytelist>,OutputCollector*)> ReduceFunction;
 
-    class Reducer {
+    class Reducer
+    {
       public:
         Reducer(ReduceFunction,OutputCollector*);
 
@@ -23,20 +25,24 @@ namespace mr {
 
     Reducer::Reducer( ReduceFunction reduceFunction_
                     , OutputCollector* collector_
-                    ) {
+                    )
+    {
         reduceFunction = reduceFunction_;
         collector = collector_;
     }
 
-    void Reducer::submit(bytelist key, std::vector<bytelist> values) {
+    void Reducer::submit(bytelist key, std::vector<bytelist> values)
+    {
         reduceFunction(key, values, collector);
     }
 
-    void reducerFunction(Reducer& reducer, ReducerInput& input) {
+    void reducerFunction(Reducer& reducer, ReducerInput& input)
+    {
         bytelist key;
         std::vector<bytelist> values;
 
-        while (input.requestNext(key, values)) {
+        while (input.requestNext(key, values))
+        {
             reducer.submit(key, values);
         }
     }

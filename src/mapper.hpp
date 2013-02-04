@@ -6,11 +6,13 @@
 #include "inputreader.hpp"
 #include "outputwriter.hpp"
 
-namespace mr {
+namespace mr
+{
 
     typedef std::function<void(KeyValuePair&,OutputCollector*)> MapFunction;
 
-    class Mapper {
+    class Mapper
+    {
       public:
         Mapper(MapFunction,OutputCollector*);
 
@@ -23,19 +25,23 @@ namespace mr {
 
     Mapper::Mapper( MapFunction mapFunction_
                   , OutputCollector* collector_
-                  ) {
+                  )
+    {
         mapFunction = mapFunction_;
         collector = collector_;
     }
 
-    void Mapper::submit(KeyValuePair& pair) {
+    void Mapper::submit(KeyValuePair& pair)
+    {
         mapFunction(pair, collector);
     }
 
-    void mapperFunction(Mapper& mapper, MapperInput& input) {
+    void mapperFunction(Mapper& mapper, MapperInput& input)
+    {
         KeyValuePair* kvpair = input.requestNext();
 
-        while (kvpair != 0) {
+        while (kvpair != 0)
+        {
             mapper.submit(*kvpair);
 
             delete kvpair;

@@ -9,9 +9,11 @@
 #include "keyvaluepair.hpp"
 #include "types.hpp"
 
-namespace mr {
+namespace mr
+{
 
-    class MapReduceJob {
+    class MapReduceJob
+    {
       public:
         MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,MapperInput*,OutputCollector*);
 
@@ -42,7 +44,8 @@ namespace mr {
                               , PartitionFunction partitionFunction_
                               , MapperInput* inputReader_
                               , OutputCollector* reducerCollector_
-                              ) {
+                              )
+    {
         /*
         numMappers = numMappers_;
         numReducers = numReducers_;
@@ -67,7 +70,8 @@ namespace mr {
         */
     }
 
-    void MapReduceJob::run() {
+    void MapReduceJob::run()
+    {
         /*
             read the input and distribute it to the mappers as we go (in a circular fashion)
             join all the mappers

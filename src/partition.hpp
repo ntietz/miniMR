@@ -3,11 +3,13 @@
 
 #include <functional>
 
-namespace mr {
+namespace mr
+{
 
     typedef std::function<int(int,bytelist)> PartitionFunction;
 
-    class Partitioner {
+    class Partitioner
+    {
       public:
         Partitioner() { }
 

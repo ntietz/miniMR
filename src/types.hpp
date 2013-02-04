@@ -4,7 +4,8 @@
 #include <vector>
 #include "keyvaluepair.hpp"
 
-namespace mr {
+namespace mr
+{
     typedef char int8;
     typedef unsigned char uint8;
     typedef std::vector<int8> bytelist;

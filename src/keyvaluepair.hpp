@@ -4,12 +4,14 @@
 #include <vector>
 #include "types.hpp"
 
-namespace mr {
+namespace mr
+{
 
     /*
      * KeyValuePair is our standard byte-pair.
      */
-    class KeyValuePair {
+    class KeyValuePair
+    {
       public:
         KeyValuePair();
         KeyValuePair(bytelist, bytelist);
@@ -17,13 +19,15 @@ namespace mr {
         bytelist value;
     };
 
-    KeyValuePair::KeyValuePair() {
+    KeyValuePair::KeyValuePair()
+    {
         key = bytelist();
         value = bytelist();
     }
 
     KeyValuePair::KeyValuePair( bytelist key_
-                              , bytelist value_) {
+                              , bytelist value_)
+    {
         key = key_;
         value = value_;
     }
