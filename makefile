@@ -57,7 +57,6 @@ keyvaluepair :
 
 
 
-
 gtest-all.o : ${GTEST_SRCS}
 	${COMPILER} ${TEST_FLAGS} -c ${GTEST_DIR}/src/gtest-all.cc
 

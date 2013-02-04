@@ -14,6 +14,9 @@ TEST(ReducerTest, AcceptsSubmissions)
 
     mr::Reducer reducer(reduceFunction, 0);
     mr::bytelist key {'a','b','c','d'};
+    std::vector<mr::bytelist> values { {'a'}, {'b','c'}, {'d','e','f'} };
+    reducer.submit(key, values);
 
+    ASSERT_TRUE(success);
 }
 
