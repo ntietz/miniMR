@@ -88,6 +88,8 @@ TEST(JobTest, Blank)
     mr::MapperInput* mapperInput = new mr::MapIntegerReader(1000);
 
     mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, partitionFunction, mapperInput, 0);
+    job.disableSort();
+    job.disableReduce();
     job.run();
 
 }

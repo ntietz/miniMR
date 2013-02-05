@@ -16,6 +16,9 @@ namespace mr
         numMappers = numMappers_;
         numReducers = numReducers_;
 
+        sortFlag = true;
+        reduceFlag = true;
+
         mapFunction = mapFunction_;
         reduceFunction = reduceFunction_;
         partitionFunction = partitionFunction_;
@@ -62,5 +65,15 @@ namespace mr
             reduce each partition
         */
 
+    }
+
+    MapReduceJob::disableSort()
+    {
+        sortFlag = false;
+    }
+
+    MapReduceJob::disableReduce()
+    {
+        reduceFlag = false;
     }
 }

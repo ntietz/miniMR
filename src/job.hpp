@@ -20,6 +20,9 @@ namespace mr
 
         void run();
 
+        void disableSort();
+        void disableReduce();
+
       private:
         int numMappers;
         int numReducers;
@@ -35,6 +38,9 @@ namespace mr
         OutputCollector** mapperCollectors;
         OutputCollector* reducerCollector;
         Partitioner* partitioner;
+
+        bool sortFlag;
+        bool reduceFlag;
     };
 }
 
