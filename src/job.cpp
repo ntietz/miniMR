@@ -67,12 +67,12 @@ namespace mr
 
     }
 
-    MapReduceJob::disableSort()
+    void MapReduceJob::disableSort()
     {
         sortFlag = false;
     }
 
-    MapReduceJob::disableReduce()
+    void MapReduceJob::disableReduce()
     {
         reduceFlag = false;
     }
