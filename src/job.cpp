@@ -10,7 +10,7 @@ namespace mr
                               , ReduceFunction reduceFunction_
                               , PartitionFunction partitionFunction_
                               , MapperInput* inputReader_
-                              , OutputCollector* reducerCollector_
+                              , OutputCollector* outputWriter_
                               )
     {
         numMappers = numMappers_;
@@ -23,18 +23,17 @@ namespace mr
         reduceFunction = reduceFunction_;
         partitionFunction = partitionFunction_;
         inputReader = inputReader_;
-        reducerCollector = reducerCollector_;
+        //reducerCollector = reducerCollector_;
+        outputWriter = outputWriter_;
 
-        mappers = new Mapper*[numMappers];
-        mapperCollectors = new OutputCollector*[numMappers];
         for (int i = 0; i < numMappers; ++i) {
-            mapperCollectors[i] = new MapperCollector();
-            mappers[i] = new Mapper(mapFunction, mapperCollectors[i]);
+            mapperCollectors.push_back(new MapperCollector());
+            mappers.push_back(new Mapper(mapFunction, mapperCollectors[i]));
         }
 
-        reducers = new Reducer*[numReducers];
         for (int i = 0; i < numReducers; ++i) {
-            reducers[i] = new Reducer(reduceFunction, reducerCollector);
+            reducerCollectors.push_back(new MapperCollector()); // TODO change the name of MapperCollector to be generic
+            reducers.push_back(new Reducer(reduceFunction, reducerCollectors[i]));
         }
     }
 
@@ -45,7 +44,7 @@ namespace mr
         std::thread* mapThreads = new std::thread[numMappers];
         for (int i = 0; i < numMappers; ++i)
         {
-            std::cout << "> Created thread " << i << std::endl;
+            std::cout << "> Created mapper " << i << std::endl;
             mapThreads[i] = std::thread(mapperFunction, mappers[i], inputReader);
         }
 
@@ -54,12 +53,9 @@ namespace mr
         for (int i = 0; i < numMappers; ++i)
         {
             mapThreads[i].join();
-            std::cout << "> Thread " << i << " finished" << std::endl;
+            std::cout << "> Mapper " << i << " finished" << std::endl;
         }
         /*
-            read the input and distribute it to the mappers as we go (in a circular fashion)
-            join all the mappers
-
             partition the output
             sort each partition
             reduce each partition

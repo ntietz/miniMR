@@ -32,11 +32,13 @@ namespace mr
         PartitionFunction partitionFunction;
 
         // TODO delete the pointers in the destructor
-        Mapper** mappers;
-        Reducer** reducers;
+        std::vector<Mapper*> mappers;
+        std::vector<Reducer*> reducers;
         MapperInput* inputReader;
-        OutputCollector** mapperCollectors;
-        OutputCollector* reducerCollector;
+        std::vector<OutputCollector*> mapperCollectors;
+        std::vector<OutputCollector*> reducerCollectors;
+        OutputCollector* outputWriter;
+        
         Partitioner* partitioner;
 
         bool sortFlag;

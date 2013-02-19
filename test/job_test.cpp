@@ -77,6 +77,15 @@ TEST(JobTest, Blank)
                                                 , mr::bytelist key
                                                 )
     {
+        int& keynum = *((int*) key.data());
+        return keynum % numReducers;
+    };
+
+    /* // TODO this will be the default partition function
+    mr::PartitionFunction partitionFunction = []( int numReducers
+                                                , mr::bytelist key
+                                                )
+    {
         unsigned int sum = 0;
         for (int i = 0; i < key.size(); ++i)
         {
@@ -84,6 +93,7 @@ TEST(JobTest, Blank)
         }
         return sum % numReducers;
     };
+    */
 
     mr::MapperInput* mapperInput = new mr::MapIntegerReader(1000);
 
