@@ -11,7 +11,7 @@ namespace mr
       public:
         DiskCache(std::string baseFilename_, uint64 maxSize_);
 
-        void submitByteList(bytelist);
+        void submit(bytelist);
         void flush();
 
         // TODO iterator
@@ -20,6 +20,9 @@ namespace mr
         std::string baseFilename;
         uint32 numFiles;
         uint64 maxSize;
+
+        std::vector<bytelist> contents;
+        uint64 size;
     };
 }
 
