@@ -9,7 +9,7 @@ namespace mr
     class DiskCache
     {
       public:
-        DiskCache(std::string baseFilename_, unsigned int maxSize_);
+        DiskCache(std::string baseFilename_, uint64 maxSize_);
 
         void submitByteList(bytelist);
         void flush();
@@ -18,8 +18,8 @@ namespace mr
 
       private:
         std::string baseFilename;
-        unsigned int numFiles;
-        unsigned int maxSize;
+        uint32 numFiles;
+        uint64 maxSize;
     };
 }
 

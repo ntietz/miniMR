@@ -2,7 +2,7 @@
 
 namespace mr
 {
-    DiskCache::DiskCache(std::string baseFilename_, unsigned int maxSize_ = 1073741824)
+    DiskCache::DiskCache(std::string baseFilename_, uint64 maxSize_ = 1073741824)
     {
         baseFilename = baseFilename_;
         numFiles = 0;
