@@ -2,14 +2,15 @@
 #define _DISKCACHE_HPP_
 
 #include <string>
+#include <vector>
 #include "types.hpp"
 
 namespace mr
 {
-    class DiskCache
+    class UnsortedDiskCache
     {
       public:
-        DiskCache(std::string baseFilename_, uint64 maxSize_);
+        UnsortedDiskCache(std::string baseFilename_, uint64 maxSize_);
 
         void submit(bytelist);
         void flush();
@@ -23,6 +24,12 @@ namespace mr
 
         std::vector<bytelist> contents;
         uint64 size;
+    };
+
+    class SortedDiskCache
+    {
+        // TODO constructor with compare function
+
     };
 }
 
