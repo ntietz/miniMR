@@ -3,37 +3,34 @@
 #include "keyvaluepair.hpp"
 #include <string>
 
-TEST(DiskCacheTest, Blank)
+TEST(DiskCacheTest, UnsortedDiskCacheProperties)
 {
-    mr::UnsortedDiskCache cache(std::string("foobar"),100);
+    mr::UnsortedDiskCache cache(std::string("foobar"),250);
 
-    for (int i = 0; i < 100; ++i)
+    std::vector<mr::KeyValuePair> submittedPairs;
+
+    for (int i = 0; i < 2048; ++i)
     {
-        mr::bytelist key_bytes;
-        mr::bytelist value_bytes;
+        mr::bytelist keyBytes;
+        mr::bytelist valueBytes;
         for (mr::int8 j = 0; j < (i % 20)+5; ++j)
         {
-            key_bytes.push_back('a' + j);
-            value_bytes.push_back('A' + j);
+            keyBytes.push_back('a' + j);
+            valueBytes.push_back('A' + j);
         }
 
-        cache.submit(key_bytes, value_bytes);
+        submittedPairs.push_back(mr::KeyValuePair(keyBytes, valueBytes));
+        cache.submit(keyBytes, valueBytes);
     }
 
     mr::UnsortedDiskCache::Iterator iterator = cache.getIterator();
-    int numRead = 0;
-    while (iterator.hasNext())
+
+    for (int index = 0; index < submittedPairs.size(); ++index)
     {
-        mr::KeyValuePair next = iterator.getNext();
-
-        std::cout << numRead << "\tkey:";
-        for (int i = 0; i < next.key.size(); ++i) std::cout << next.key[i];
-        std::cout << std::endl;
-
-        std::cout << numRead << "\tvalue:";
-        for (int i = 0; i < next.value.size(); ++i) std::cout << next.value[i];
-        std::cout << std::endl;
-
-        ++numRead;
+        ASSERT_TRUE(iterator.hasNext());
+        mr::KeyValuePair pair = iterator.getNext();
+        EXPECT_EQ(submittedPairs[index], pair);
     }
+
+    ASSERT_FALSE(iterator.hasNext());
 }

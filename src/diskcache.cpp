@@ -155,7 +155,6 @@ namespace mr
 
                 in->read((char*) &numRemaining, sizeof(uint32));
                 startedReading = true;
-                std::cout << "Opened " << filename << " to read " << numRemaining << std::endl;
             }
 
             while (numRemaining > 0 && size < maxSize)
@@ -187,10 +186,11 @@ namespace mr
 
             if (size >= maxSize)
             {
-                std::reverse(contents.begin(), contents.end());
                 break;
             }
         }
+
+        std::reverse(contents.begin(), contents.end());
     }
 }
 

@@ -9,12 +9,15 @@ namespace mr
     /*
      * KeyValuePair is our standard byte-pair.
      */
-    struct KeyValuePair
+    class KeyValuePair
     {
+      public:
         KeyValuePair();
         KeyValuePair(bytelist, bytelist);
         bytelist key;
         bytelist value;
+
+        bool operator==(const KeyValuePair& other) const;
     };
 
     typedef std::vector<KeyValuePair> KeyValuePairList;
