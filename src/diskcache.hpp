@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 namespace mr
 {
@@ -48,6 +49,7 @@ namespace mr
                                  , uint32 numFiles_
                                  , uint64 maxSize_
                                  );
+        ~UnsortedDiskCacheIterator();
 
         bool hasNext();
         KeyValuePair getNext();
@@ -61,6 +63,7 @@ namespace mr
         uint64 size;
 
         void populateCache();
+        std::ifstream* in;
         uint32 currentFile;
         bool startedReading;
         uint32 numRemaining;

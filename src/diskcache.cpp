@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 namespace mr
 {
@@ -63,7 +64,7 @@ namespace mr
         uint32 numberOfRecords = contents.size();
         out.write((char*) &numberOfRecords, sizeof(uint32));
 
-        for (int index = 0; index < contents.size(); ++index)
+        for (uint32 index = 0; index < contents.size(); ++index)
         {
             uint32 keySize = contents[index].key.size();
             out.write((char*) &keySize, sizeof(uint32));
@@ -86,7 +87,7 @@ namespace mr
             flush();
         }
 
-        return UnsortedDiskCache::Iterator(baseFilename, numFiles, maxSize);
+        return UnsortedDiskCacheIterator(baseFilename, numFiles, maxSize*2);
     }
 
     UnsortedDiskCacheIterator::UnsortedDiskCacheIterator( std::string baseFilename_
@@ -101,6 +102,12 @@ namespace mr
         currentFile = 0;
         startedReading = false;
         numRemaining = 0;
+        in = new std::ifstream();
+    }
+
+    UnsortedDiskCacheIterator::~UnsortedDiskCacheIterator()
+    {
+        delete in;
     }
 
     bool UnsortedDiskCacheIterator::hasNext()
@@ -135,14 +142,54 @@ namespace mr
 
     void UnsortedDiskCacheIterator::populateCache()
     {
-        if (currentFile < numFiles)
+        while (currentFile < numFiles)
         {
             if (!startedReading)
             {
-                // TODO read the number remaining
+                std::string filename = generateFilename(baseFilename, currentFile);
+                if (in->is_open())
+                {
+                    in->close();
+                }
+                in->open(filename);
+
+                in->read((char*) &numRemaining, sizeof(uint32));
+                startedReading = true;
+                std::cout << "Opened " << filename << " to read " << numRemaining << std::endl;
             }
 
-            // TODO read until the cache is full
+            while (numRemaining > 0 && size < maxSize)
+            {
+                // TODO read one
+                uint32 keySize;
+                in->read((char*) &keySize, sizeof(uint32));
+                bytelist key;
+                key.resize(keySize);
+                in->read(key.data(), keySize);
+
+                uint32 valueSize;
+                in->read((char*) &valueSize, sizeof(uint32));
+                bytelist value;
+                value.resize(valueSize);
+                in->read(value.data(), valueSize);
+
+                contents.push_back(KeyValuePair(key,value));
+                size += keySize;
+                size += valueSize;
+                --numRemaining;
+            }
+
+            if (numRemaining == 0)
+            {
+                ++currentFile;
+                startedReading = false;
+            }
+
+            if (size >= maxSize)
+            {
+                std::reverse(contents.begin(), contents.end());
+                break;
+            }
         }
     }
 }
