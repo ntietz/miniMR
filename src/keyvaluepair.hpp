@@ -9,9 +9,8 @@ namespace mr
     /*
      * KeyValuePair is our standard byte-pair.
      */
-    class KeyValuePair
+    struct KeyValuePair
     {
-      public:
         KeyValuePair();
         KeyValuePair(bytelist, bytelist);
         bytelist key;
