@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <functional>
 
 namespace mr
 {
@@ -69,13 +70,33 @@ namespace mr
         uint32 numRemaining;
     };
 
-    class SortedDiskCache
+    typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
+
+    class SortedDiskCache : public UnsortedDiskCache
     {
       public:
-        // TODO constructor with compare function
+        typedef SortedDiskCacheIterator Iterator;
+        SortedDiskCache(std::string baseFilename_, uint64 maxSize_, Comparator comparator_);
+        ~SortedDiskCache();
 
-        void submit(bytelist);
+        void submit(bytelist&, bytelist&);
+        void submit(KeyValuePair&);
         void flush();
+
+        Iterator getIterator();
+      private:
+        std::string baseFilename;
+        uint32 numFiles;
+        uint64 maxSize;
+        Comparator comparator;
+
+        std::vector<KeyValuePair> contents;
+        uint64 size;
+    };
+
+    class SortedDiskCacheIterator
+    {
+
     };
 }
 

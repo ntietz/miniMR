@@ -19,7 +19,7 @@ namespace mr
         return filenameCreator.str();
     }
 
-    UnsortedDiskCache::UnsortedDiskCache(std::string baseFilename_, uint64 maxSize_ = 1073741824)
+    UnsortedDiskCache::UnsortedDiskCache(std::string baseFilename_, uint64 maxSize_)
     {
         baseFilename = baseFilename_;
         numFiles = 0;
@@ -191,6 +191,14 @@ namespace mr
         }
 
         std::reverse(contents.begin(), contents.end());
+    }
+
+    SortedDiskCache::SortedDiskCache( std::string baseFilename_
+                                    , uint64 maxSize_
+                                    , Comparator comparator_
+                                    ) : UnsortedDiskCache(baseFilename_, maxSize_)
+    {
+        comparator = comparator_;
     }
 }
 
