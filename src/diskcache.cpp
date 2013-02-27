@@ -87,7 +87,7 @@ namespace mr
             flush();
         }
 
-        return UnsortedDiskCacheIterator(baseFilename, numFiles, maxSize*2);
+        return UnsortedDiskCacheIterator(baseFilename, numFiles, maxSize);
     }
 
     UnsortedDiskCacheIterator::UnsortedDiskCacheIterator( std::string baseFilename_
@@ -159,7 +159,6 @@ namespace mr
 
             while (numRemaining > 0 && size < maxSize)
             {
-                // TODO read one
                 uint32 keySize;
                 in->read((char*) &keySize, sizeof(uint32));
                 bytelist key;
@@ -199,6 +198,65 @@ namespace mr
                                     ) : UnsortedDiskCache(baseFilename_, maxSize_)
     {
         comparator = comparator_;
+    }
+
+    SortedDiskCache::~SortedDiskCache()
+    {
+        for (uint32 fileNumber = 0; fileNumber < numFiles; ++fileNumber)
+        {
+            std::string filename = generateFilename(baseFilename, fileNumber);
+            std::remove(filename.c_str());
+        }
+    }
+
+    void SortedDiskCache::flush()
+    {
+        std::sort(contents.begin(), contents.end(), comparator);
+        UnsortedDiskCache::flush();
+    }
+
+    SortedDiskCache::Iterator SortedDiskCache::getIterator()
+    {
+        if (size > 0)
+        {
+            flush();
+        }
+
+        return SortedDiskCacheIterator(baseFilename, numFiles, maxSize, comparator);
+    }
+
+    SortedDiskCacheIterator::SortedDiskCacheIterator( std::string baseFilename_
+                                                    , uint32 numFiles_
+                                                    , uint64 maxSize_
+                                                    , Comparator comparator_
+                                                    ) : UnsortedDiskCacheIterator(baseFilename_, numFiles_, maxSize_)
+    {
+        comparator = comparator_;
+        in = new std::ifstream[numFiles];
+        numRemaining = new uint32[numFiles];
+        // TODO prep for the reads
+        for (int currentFile = 0; currentFile < numFiles; ++currentFile)
+        {
+            std::string filename = generateFilename(baseFilename, currentFile);
+            in[currentFile].open(filename);
+            in[currentFile].read((char*) &(numRemaining[currentFile]), sizeof(uint32));
+        }
+
+        std::cout << "READ IN:\n";
+        for (int i = 0; i < numFiles; ++i)
+        {
+            std::cout << i << " " << numRemaining[i] << std::endl;
+        }
+    }
+
+    SortedDiskCacheIterator::~SortedDiskCacheIterator()
+    {
+        delete [] in;
+    }
+
+    void SortedDiskCacheIterator::populateCache()
+    {
+        
     }
 }
 

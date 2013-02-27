@@ -3,6 +3,11 @@
 #include "keyvaluepair.hpp"
 #include <string>
 
+bool compare(const mr::KeyValuePair& left, const mr::KeyValuePair& right)
+{
+    return true;
+}
+
 TEST(DiskCacheTest, UnsortedDiskCacheProperties)
 {
     mr::UnsortedDiskCache cache(std::string("foobar"),250);
@@ -33,4 +38,27 @@ TEST(DiskCacheTest, UnsortedDiskCacheProperties)
     }
 
     ASSERT_FALSE(iterator.hasNext());
+}
+
+TEST(DiskCacheTest, SortedDiskCacheProperties)
+{
+    mr::SortedDiskCache cache(std::string("foobar"), 250, compare);
+
+    std::vector<mr::KeyValuePair> submittedPairs;
+
+    for (int i = 0; i < 2048; ++i)
+    {
+        mr::bytelist keyBytes;
+        mr::bytelist valueBytes;
+        for (mr::int8 j = 0; j < (i % 20)+5; ++j)
+        {
+            keyBytes.push_back('a' + j);
+            valueBytes.push_back('A' + j);
+        }
+
+        submittedPairs.push_back(mr::KeyValuePair(keyBytes, valueBytes));
+        cache.submit(keyBytes, valueBytes);
+    }
+
+    mr::SortedDiskCache::Iterator iterator = cache.getIterator();
 }

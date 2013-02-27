@@ -28,13 +28,13 @@ namespace mr
         UnsortedDiskCache(std::string baseFilename_, uint64 maxSize_);
         ~UnsortedDiskCache();
 
-        void submit(bytelist&, bytelist&);
-        void submit(KeyValuePair&);
-        void flush();
+        virtual void submit(bytelist&, bytelist&);
+        virtual void submit(KeyValuePair&);
+        virtual void flush();
 
         Iterator getIterator();
 
-      private:
+      protected:
         std::string baseFilename;
         uint32 numFiles;
         uint64 maxSize;
@@ -55,7 +55,7 @@ namespace mr
         bool hasNext();
         KeyValuePair getNext();
 
-      private:
+      protected:
         std::string baseFilename;
         uint32 numFiles;
         uint64 maxSize;
@@ -63,7 +63,8 @@ namespace mr
         std::vector<KeyValuePair> contents;
         uint64 size;
 
-        void populateCache();
+        virtual void populateCache();
+      private:
         std::ifstream* in;
         uint32 currentFile;
         bool startedReading;
@@ -79,24 +80,28 @@ namespace mr
         SortedDiskCache(std::string baseFilename_, uint64 maxSize_, Comparator comparator_);
         ~SortedDiskCache();
 
-        void submit(bytelist&, bytelist&);
-        void submit(KeyValuePair&);
         void flush();
 
         Iterator getIterator();
-      private:
-        std::string baseFilename;
-        uint32 numFiles;
-        uint64 maxSize;
+      protected:
         Comparator comparator;
-
-        std::vector<KeyValuePair> contents;
-        uint64 size;
     };
 
-    class SortedDiskCacheIterator
+    class SortedDiskCacheIterator : public UnsortedDiskCacheIterator
     {
+      public:
+        SortedDiskCacheIterator( std::string baseFilename_
+                               , uint32 numFiles_
+                               , uint64 maxSize_
+                               , Comparator comparator_
+                               );
+        ~SortedDiskCacheIterator();
 
+      protected:
+        Comparator comparator;
+        void populateCache();
+        std::ifstream* in;
+        uint32* numRemaining;
     };
 }
 
