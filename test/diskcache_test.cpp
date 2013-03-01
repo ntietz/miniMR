@@ -5,12 +5,17 @@
 
 bool compare(const mr::KeyValuePair& left, const mr::KeyValuePair& right)
 {
-    return true;
+    return (left.key.size() < right.key.size());
+}
+
+bool equal(const mr::KeyValuePair& left, const mr::KeyValuePair& right)
+{
+    return left.key.size() == right.key.size();
 }
 
 TEST(DiskCacheTest, UnsortedDiskCacheProperties)
 {
-    mr::UnsortedDiskCache cache(std::string("foobar"),250);
+    mr::UnsortedDiskCache cache(std::string("foobar"),1024);
 
     std::vector<mr::KeyValuePair> submittedPairs;
 
@@ -42,9 +47,10 @@ TEST(DiskCacheTest, UnsortedDiskCacheProperties)
 
 TEST(DiskCacheTest, SortedDiskCacheProperties)
 {
-    mr::SortedDiskCache cache(std::string("foobar"), 250, compare);
+    mr::SortedDiskCache cache(std::string("barfoo"), 4096, compare);
 
     std::vector<mr::KeyValuePair> submittedPairs;
+    std::vector<mr::KeyValuePair> receivedPairs;
 
     for (int i = 0; i < 2048; ++i)
     {
@@ -61,4 +67,18 @@ TEST(DiskCacheTest, SortedDiskCacheProperties)
     }
 
     mr::SortedDiskCache::Iterator iterator = cache.getIterator();
+
+    while (iterator.hasNext())
+    {
+        receivedPairs.push_back(iterator.getNext());
+    }
+
+    EXPECT_EQ(submittedPairs.size(), receivedPairs.size());
+
+    int unsorted = 0;
+    int sorted = 0;
+    for (int index = 0; index < receivedPairs.size() - 1; ++index)
+    {
+        EXPECT_TRUE(compare(receivedPairs[index], receivedPairs[index+1]) || equal(receivedPairs[index], receivedPairs[index+1]));
+    }
 }

@@ -87,13 +87,13 @@ namespace mr
             flush();
         }
 
-        return UnsortedDiskCacheIterator(baseFilename, numFiles, maxSize);
+        return DiskCacheIterator(baseFilename, numFiles, maxSize);
     }
 
-    UnsortedDiskCacheIterator::UnsortedDiskCacheIterator( std::string baseFilename_
-                                                        , uint32 numFiles_
-                                                        , uint64 maxSize_
-                                                        )
+    DiskCacheIterator::DiskCacheIterator( std::string baseFilename_
+                                        , uint32 numFiles_
+                                        , uint64 maxSize_
+                                        )
     {
         baseFilename = baseFilename_;
         numFiles = numFiles_;
@@ -105,12 +105,12 @@ namespace mr
         in = new std::ifstream();
     }
 
-    UnsortedDiskCacheIterator::~UnsortedDiskCacheIterator()
+    DiskCacheIterator::~DiskCacheIterator()
     {
         delete in;
     }
 
-    bool UnsortedDiskCacheIterator::hasNext()
+    bool DiskCacheIterator::hasNext()
     {
         if (contents.size() == 0)
         {
@@ -127,7 +127,7 @@ namespace mr
         }
     }
 
-    KeyValuePair UnsortedDiskCacheIterator::getNext()
+    KeyValuePair DiskCacheIterator::getNext()
     {
         if (!hasNext())
         {
@@ -140,7 +140,7 @@ namespace mr
         return result;
     }
 
-    void UnsortedDiskCacheIterator::populateCache()
+    void DiskCacheIterator::populateCache()
     {
         while (currentFile < numFiles)
         {
@@ -207,6 +207,8 @@ namespace mr
             std::string filename = generateFilename(baseFilename, fileNumber);
             std::remove(filename.c_str());
         }
+
+        std::remove(generateFilename(finalBaseFilename, 0).c_str());
     }
 
     void SortedDiskCache::flush()
@@ -222,41 +224,144 @@ namespace mr
             flush();
         }
 
-        return SortedDiskCacheIterator(baseFilename, numFiles, maxSize, comparator);
+        mergeFiles();
+
+        // TODO add mergedBaseFilename
+        return DiskCacheIterator(finalBaseFilename, 1, maxSize);
     }
 
-    SortedDiskCacheIterator::SortedDiskCacheIterator( std::string baseFilename_
-                                                    , uint32 numFiles_
-                                                    , uint64 maxSize_
-                                                    , Comparator comparator_
-                                                    ) : UnsortedDiskCacheIterator(baseFilename_, numFiles_, maxSize_)
+    //void SortedDiskCacheIterator::populateCache()
+    void SortedDiskCache::mergeFiles()
     {
-        comparator = comparator_;
-        in = new std::ifstream[numFiles];
-        numRemaining = new uint32[numFiles];
-        // TODO prep for the reads
+        std::vector<std::ifstream*> in;
+        std::vector<uint32> numRemaining;
+        uint32 totalRemaining = 0;
+
+        finalBaseFilename = baseFilename + "merged";
+        std::string finalFilename = generateFilename(finalBaseFilename, 0);
+        std::ofstream out(finalFilename);
+
+        uint64 maxBufferSize = maxSize / numFiles;
+        std::vector<KeyValuePair>* buffers = new std::vector<KeyValuePair>[numFiles];
+        uint64* bufferSizes = new uint64[numFiles];
+
         for (int currentFile = 0; currentFile < numFiles; ++currentFile)
         {
             std::string filename = generateFilename(baseFilename, currentFile);
-            in[currentFile].open(filename);
-            in[currentFile].read((char*) &(numRemaining[currentFile]), sizeof(uint32));
+            in.push_back(new std::ifstream(filename));
+
+            uint32 numCurrent;
+            in[currentFile]->read((char*) &numCurrent, sizeof(uint32));
+
+            numRemaining.push_back(numCurrent);
+            totalRemaining += numCurrent;
+
+            bufferSizes[currentFile] = 0;
         }
 
-        std::cout << "READ IN:\n";
-        for (int i = 0; i < numFiles; ++i)
+        out.write((char*) &totalRemaining, sizeof(uint32));
+
+        auto fillBuffer = [&](uint32 currentFile)
         {
-            std::cout << i << " " << numRemaining[i] << std::endl;
+            while (bufferSizes[currentFile] < maxBufferSize && numRemaining[currentFile] > 0)
+            {
+                uint32 keySize;
+                in[currentFile]->read((char*) &keySize, sizeof(uint32));
+                bytelist key;
+                key.resize(keySize);
+                in[currentFile]->read(key.data(), keySize);
+
+                uint32 valueSize;
+                in[currentFile]->read((char*) &valueSize, sizeof(uint32));
+                bytelist value;
+                value.resize(valueSize);
+                in[currentFile]->read(value.data(), valueSize);
+
+                buffers[currentFile].push_back(KeyValuePair(key,value));
+
+                bufferSizes[currentFile] += keySize;
+                bufferSizes[currentFile] += valueSize;
+                --numRemaining[currentFile];
+                --totalRemaining;
+            }
+        };
+
+        auto outputPair = [&](KeyValuePair& pair)
+        {
+            uint32 keySize = pair.key.size();
+            out.write((char*) &keySize, sizeof(uint32));
+            out.write(pair.key.data(), keySize);
+
+            uint32 valueSize = pair.value.size();
+            out.write((char*) &valueSize, sizeof(uint32));
+            out.write(pair.value.data(), valueSize);
+        };
+
+        while (totalRemaining > 0)
+        {
+            for (uint32 currentFile = 0; currentFile < numFiles; ++currentFile)
+            {
+                fillBuffer(currentFile);
+                int numSorted = 0;
+                for (uint32 i = 0; i < buffers[currentFile].size(); ++i)
+                {
+                    if (comparator(buffers[currentFile][i], buffers[currentFile][i+1]))
+                    {
+                        ++numSorted;
+                    }
+                }
+            }
+
+            // TODO do a numFiles-merge, outputting as we go
+            bool allEmpty = false;
+            while (!allEmpty)
+            {
+                uint32 minIndex = -1;
+                KeyValuePair min;
+                for (int currentFile = 0; currentFile < numFiles; ++currentFile)
+                {
+                    // TODO if buffer is empty, fill it up!
+                    if (bufferSizes[currentFile] == 0)
+                    {
+                        fillBuffer(currentFile);
+                    }
+
+                    // TODO if the buffer is empty, continue!
+                    if (bufferSizes[currentFile] == 0)
+                    {
+                        continue;
+                    }
+
+                    // TODO if min isn't set, set it!
+                    if (minIndex == -1)
+                    {
+                        minIndex = currentFile;
+                        min = buffers[currentFile][0];
+                    }
+                    // TODO check if the current one is lower
+                    else if (comparator(buffers[currentFile][0], buffers[minIndex][0]))
+                    {
+                        minIndex = currentFile;
+                        min = buffers[currentFile][0];
+                    }
+                }
+
+                if (minIndex == -1)
+                {
+                    allEmpty = true;
+                }
+                else
+                {
+                    outputPair(min);
+                    bufferSizes[minIndex] -= min.key.size();
+                    bufferSizes[minIndex] -= min.value.size();
+                    buffers[minIndex].erase(buffers[minIndex].begin());
+                }
+            }
         }
-    }
 
-    SortedDiskCacheIterator::~SortedDiskCacheIterator()
-    {
-        delete [] in;
-    }
-
-    void SortedDiskCacheIterator::populateCache()
-    {
-        
+        delete [] buffers;
+        delete [] bufferSizes;
     }
 }
 

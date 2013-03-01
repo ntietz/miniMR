@@ -12,9 +12,8 @@
 namespace mr
 {
     class UnsortedDiskCache;
-    class UnsortedDiskCacheIterator;
     class SortedDiskCache;
-    class SortedDiskCacheIterator;
+    class DiskCacheIterator;
 
     std::string generateFilename(std::string baseFilename, uint32 fileNumber);
 
@@ -23,7 +22,7 @@ namespace mr
     class UnsortedDiskCache
     {
       public:
-        typedef UnsortedDiskCacheIterator Iterator;
+        typedef DiskCacheIterator Iterator;
 
         UnsortedDiskCache(std::string baseFilename_, uint64 maxSize_);
         ~UnsortedDiskCache();
@@ -43,14 +42,32 @@ namespace mr
         uint64 size;
     };
 
-    class UnsortedDiskCacheIterator
+    typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
+
+    class SortedDiskCache : public UnsortedDiskCache
     {
       public:
-        UnsortedDiskCacheIterator( std::string baseFilename_
-                                 , uint32 numFiles_
-                                 , uint64 maxSize_
-                                 );
-        ~UnsortedDiskCacheIterator();
+        typedef DiskCacheIterator Iterator;
+        SortedDiskCache(std::string baseFilename_, uint64 maxSize_, Comparator comparator_);
+        ~SortedDiskCache();
+
+        void flush();
+
+        Iterator getIterator();
+      protected:
+        std::string finalBaseFilename;
+        Comparator comparator;
+        void mergeFiles();
+    };
+
+    class DiskCacheIterator
+    {
+      public:
+        DiskCacheIterator( std::string baseFilename_
+                         , uint32 numFiles_
+                         , uint64 maxSize_
+                         );
+        ~DiskCacheIterator();
 
         bool hasNext();
         KeyValuePair getNext();
@@ -69,39 +86,6 @@ namespace mr
         uint32 currentFile;
         bool startedReading;
         uint32 numRemaining;
-    };
-
-    typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
-
-    class SortedDiskCache : public UnsortedDiskCache
-    {
-      public:
-        typedef SortedDiskCacheIterator Iterator;
-        SortedDiskCache(std::string baseFilename_, uint64 maxSize_, Comparator comparator_);
-        ~SortedDiskCache();
-
-        void flush();
-
-        Iterator getIterator();
-      protected:
-        Comparator comparator;
-    };
-
-    class SortedDiskCacheIterator : public UnsortedDiskCacheIterator
-    {
-      public:
-        SortedDiskCacheIterator( std::string baseFilename_
-                               , uint32 numFiles_
-                               , uint64 maxSize_
-                               , Comparator comparator_
-                               );
-        ~SortedDiskCacheIterator();
-
-      protected:
-        Comparator comparator;
-        void populateCache();
-        std::ifstream* in;
-        uint32* numRemaining;
     };
 }
 
