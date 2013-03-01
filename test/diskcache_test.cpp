@@ -47,7 +47,7 @@ TEST(DiskCacheTest, UnsortedDiskCacheProperties)
 
 TEST(DiskCacheTest, SortedDiskCacheProperties)
 {
-    mr::SortedDiskCache cache(std::string("barfoo"), 4096, compare);
+    mr::SortedDiskCache cache(std::string("barfoo"), 1024, compare);
 
     std::vector<mr::KeyValuePair> submittedPairs;
     std::vector<mr::KeyValuePair> receivedPairs;

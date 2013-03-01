@@ -233,8 +233,8 @@ namespace mr
     //void SortedDiskCacheIterator::populateCache()
     void SortedDiskCache::mergeFiles()
     {
-        std::vector<std::ifstream*> in;
-        std::vector<uint32> numRemaining;
+        std::ifstream* in = new std::ifstream[numFiles];
+        uint32* numRemaining = new uint32[numFiles];
         uint32 totalRemaining = 0;
 
         finalBaseFilename = baseFilename + "merged";
@@ -243,39 +243,44 @@ namespace mr
 
         uint64 maxBufferSize = maxSize / numFiles;
         std::vector<KeyValuePair>* buffers = new std::vector<KeyValuePair>[numFiles];
+        uint32* bufferPositions = new uint32[numFiles];
         uint64* bufferSizes = new uint64[numFiles];
 
         for (int currentFile = 0; currentFile < numFiles; ++currentFile)
         {
             std::string filename = generateFilename(baseFilename, currentFile);
-            in.push_back(new std::ifstream(filename));
+            in[currentFile].open(filename);
 
             uint32 numCurrent;
-            in[currentFile]->read((char*) &numCurrent, sizeof(uint32));
+            in[currentFile].read((char*) &numCurrent, sizeof(uint32));
 
-            numRemaining.push_back(numCurrent);
+            numRemaining[currentFile] = numCurrent;
             totalRemaining += numCurrent;
 
             bufferSizes[currentFile] = 0;
+            bufferPositions[currentFile] = 0;
         }
 
         out.write((char*) &totalRemaining, sizeof(uint32));
 
         auto fillBuffer = [&](uint32 currentFile)
         {
+            buffers[currentFile].clear();
+            bufferPositions[currentFile] = 0;
+
             while (bufferSizes[currentFile] < maxBufferSize && numRemaining[currentFile] > 0)
             {
                 uint32 keySize;
-                in[currentFile]->read((char*) &keySize, sizeof(uint32));
+                in[currentFile].read((char*) &keySize, sizeof(uint32));
                 bytelist key;
                 key.resize(keySize);
-                in[currentFile]->read(key.data(), keySize);
+                in[currentFile].read(key.data(), keySize);
 
                 uint32 valueSize;
-                in[currentFile]->read((char*) &valueSize, sizeof(uint32));
+                in[currentFile].read((char*) &valueSize, sizeof(uint32));
                 bytelist value;
                 value.resize(valueSize);
-                in[currentFile]->read(value.data(), valueSize);
+                in[currentFile].read(value.data(), valueSize);
 
                 buffers[currentFile].push_back(KeyValuePair(key,value));
 
@@ -336,13 +341,14 @@ namespace mr
                     if (minIndex == -1)
                     {
                         minIndex = currentFile;
-                        min = buffers[currentFile][0];
+                        min = buffers[currentFile][bufferPositions[minIndex]];
                     }
                     // TODO check if the current one is lower
-                    else if (comparator(buffers[currentFile][0], buffers[minIndex][0]))
+                    else if (comparator( buffers[currentFile][bufferPositions[currentFile]]
+                                       , buffers[minIndex][bufferPositions[minIndex]]))
                     {
                         minIndex = currentFile;
-                        min = buffers[currentFile][0];
+                        min = buffers[currentFile][bufferPositions[minIndex]];
                     }
                 }
 
@@ -355,12 +361,16 @@ namespace mr
                     outputPair(min);
                     bufferSizes[minIndex] -= min.key.size();
                     bufferSizes[minIndex] -= min.value.size();
-                    buffers[minIndex].erase(buffers[minIndex].begin());
+                    bufferPositions[minIndex]++;
+                    //buffers[minIndex].erase(buffers[minIndex].begin());
                 }
             }
         }
 
+        delete [] in;
+        delete [] numRemaining;
         delete [] buffers;
+        delete [] bufferPositions;
         delete [] bufferSizes;
     }
 }
