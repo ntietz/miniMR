@@ -4,11 +4,11 @@
 
 namespace mr
 {
-    MapReduceJob::MapReduceJob( int numMappers_
+    MapReduceJob::MapReduceJob( uint32 numMappers_
                               , MapFunction mapFunction_
-                              , int numReducers_
+                              , uint32 numReducers_
                               , ReduceFunction reduceFunction_
-                              , PartitionFunction partitionFunction_
+                              , Comparator comparator_
                               , MapperInput* inputReader_
                               , OutputCollector* outputWriter_
                               )
@@ -16,24 +16,23 @@ namespace mr
         numMappers = numMappers_;
         numReducers = numReducers_;
 
-        sortFlag = true;
         reduceFlag = true;
 
         mapFunction = mapFunction_;
         reduceFunction = reduceFunction_;
-        partitionFunction = partitionFunction_;
+        comparator = comparator_;
         inputReader = inputReader_;
         //reducerCollector = reducerCollector_;
         outputWriter = outputWriter_;
 
-        for (int i = 0; i < numMappers; ++i) {
-            mapperCollectors.push_back(new MapperCollector());
+        for (uint32 i = 0; i < numMappers; ++i) {
+            mapperCollectors.push_back(new MapperCollector("foobar", 10240, comparator));
             mappers.push_back(new Mapper(mapFunction, mapperCollectors[i]));
         }
 
-        for (int i = 0; i < numReducers; ++i) {
-            reducerCollectors.push_back(new MapperCollector()); // TODO change the name of MapperCollector to be generic
-            reducers.push_back(new Reducer(reduceFunction, reducerCollectors[i]));
+        for (uint32 i = 0; i < numReducers; ++i) {
+            //reducerCollectors.push_back(new MapperCollector()); // TODO change the name of MapperCollector to be generic
+            //reducers.push_back(new Reducer(reduceFunction, reducerCollectors[i]));
         }
     }
 
@@ -42,7 +41,7 @@ namespace mr
         std::cout << "Starting MapReduce job...\n";
 
         std::thread* mapThreads = new std::thread[numMappers];
-        for (int i = 0; i < numMappers; ++i)
+        for (uint32 i = 0; i < numMappers; ++i)
         {
             std::cout << "> Created mapper " << i << std::endl;
             mapThreads[i] = std::thread(mapperFunction, mappers[i], inputReader);
@@ -50,7 +49,7 @@ namespace mr
 
         std::cout << "All mappers running...\n";
 
-        for (int i = 0; i < numMappers; ++i)
+        for (uint32 i = 0; i < numMappers; ++i)
         {
             mapThreads[i].join();
             std::cout << "> Mapper " << i << " finished" << std::endl;
@@ -61,11 +60,6 @@ namespace mr
             reduce each partition
         */
 
-    }
-
-    void MapReduceJob::disableSort()
-    {
-        sortFlag = false;
     }
 
     void MapReduceJob::disableReduce()

@@ -3,7 +3,6 @@
 
 #include "mapper.hpp"
 #include "reducer.hpp"
-#include "partition.hpp"
 #include "inputreader.hpp"
 #include "outputwriter.hpp"
 #include "keyvaluepair.hpp"
@@ -15,7 +14,7 @@ namespace mr
     class MapReduceJob
     {
       public:
-        MapReduceJob(int,MapFunction,int,ReduceFunction,PartitionFunction,MapperInput*,OutputCollector*);
+        MapReduceJob(uint32,MapFunction,uint32,ReduceFunction,Comparator,MapperInput*,OutputCollector*);
         // TODO destructor
 
         void run();
@@ -29,7 +28,7 @@ namespace mr
 
         MapFunction mapFunction;
         ReduceFunction reduceFunction;
-        PartitionFunction partitionFunction;
+        Comparator comparator;
 
         // TODO delete the pointers in the destructor
         std::vector<Mapper*> mappers;
@@ -38,10 +37,7 @@ namespace mr
         std::vector<OutputCollector*> mapperCollectors;
         std::vector<OutputCollector*> reducerCollectors;
         OutputCollector* outputWriter;
-        
-        Partitioner* partitioner;
 
-        bool sortFlag;
         bool reduceFlag;
     };
 }

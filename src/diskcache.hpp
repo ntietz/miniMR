@@ -42,8 +42,6 @@ namespace mr
         uint64 size;
     };
 
-    typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
-
     class SortedDiskCache : public UnsortedDiskCache
     {
       public:

@@ -73,33 +73,18 @@ TEST(JobTest, Blank)
         
     };
 
-    mr::PartitionFunction partitionFunction = []( int numReducers
-                                                , mr::bytelist key
-                                                )
+    mr::Comparator comparator = []( const mr::KeyValuePair& left
+                                  , const mr::KeyValuePair& right
+                                  )
     {
-        int& keynum = *((int*) key.data());
-        return keynum % numReducers;
+        return left.key < right.key;
     };
 
-    /* // TODO this will be the default partition function
-    mr::PartitionFunction partitionFunction = []( int numReducers
-                                                , mr::bytelist key
-                                                )
-    {
-        unsigned int sum = 0;
-        for (int i = 0; i < key.size(); ++i)
-        {
-            sum += key[i];
-        }
-        return sum % numReducers;
-    };
-    */
+    mr::MapperInput* mapperInput = new mr::MapIntegerReader(10000);
 
-    mr::MapperInput* mapperInput = new mr::MapIntegerReader(1000);
-
-    mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, partitionFunction, mapperInput, 0);
-    job.disableSort();
-    job.disableReduce();
+    mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, 0);
+    //job.disableSort();
+    //job.disableReduce();
     job.run();
 
 }

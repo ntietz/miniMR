@@ -2,13 +2,21 @@
 
 namespace mr
 {
-    void MapperCollector::collect(KeyValuePair& pair)
+    MapperCollector::MapperCollector( std::string baseFilename
+                                    , uint64 memLimit
+                                    , Comparator comparator
+                                    ) : cache(baseFilename, memLimit, comparator)
     {
-        contents.push_back(pair);
+        // ...
     }
 
-    KeyValuePairList MapperCollector::getContents()
+    void MapperCollector::collect(KeyValuePair& pair)
     {
-        return contents;
+        cache.submit(pair);
+    }
+
+    DiskCacheIterator MapperCollector::getIterator()
+    {
+        return cache.getIterator();
     }
 }

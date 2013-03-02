@@ -20,7 +20,7 @@ TEST_FLAGS = ${COMPILE_OPTS} -I${GTEST_DIR} -I${GTEST_DIR}/include
 GTEST_HEADERS = ${GTEST_DIR}/include/gtest/*.h \
 				${GTEST_DIR}/include/gtest/internal/*.h
 GTEST_SRCS = ${GTEST_DIR}/src/*.cc ${GTEST_DIR}/src/*.h ${GTEST_HEADERS}
-TESTS = mapper_test.o reducer_test.o context_test.o partition_test.o job_test.o diskcache_test.o keyvaluepair_test.o
+TESTS = mapper_test.o reducer_test.o context_test.o job_test.o diskcache_test.o keyvaluepair_test.o
 
 all : compile tests run_tests
 
@@ -32,7 +32,7 @@ compile : clean init mapreduce
 run_tests : tests
 	bin/tests.out
 
-mapreduce : mapper reducer inputreader outputwriter job partition keyvaluepair diskcache
+mapreduce : mapper reducer inputreader outputwriter job keyvaluepair diskcache
 
 mapper : 
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/mapper.cpp -c -o ${BIN}/mapper.o
@@ -48,9 +48,6 @@ outputwriter :
 
 job : 
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/job.cpp -c -o ${BIN}/job.o
-
-partition : 
-	${COMPILER} ${COMPILE_OPTS} ${SRC}/partition.cpp -c -o ${BIN}/partition.o
 
 keyvaluepair : 
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/keyvaluepair.cpp -c -o ${BIN}/keyvaluepair.o
@@ -78,9 +75,6 @@ reducer_test.o : ${TEST_DIR}/reducer_test.cpp mapreduce
 
 context_test.o : ${TEST_DIR}/context_test.cpp mapreduce
 	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/context_test.cpp
-
-partition_test.o : ${TEST_DIR}/partition_test.cpp mapreduce
-	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/partition_test.cpp
 
 job_test.o : ${TEST_DIR}/job_test.cpp mapreduce
 	${COMPILER} ${TEST_FLAGS} -c ${TEST_DIR}/job_test.cpp

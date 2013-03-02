@@ -2,9 +2,12 @@
 #define _TYPES_HPP_
 
 #include <vector>
+#include <functional>
 
 namespace mr
 {
+    class KeyValuePair;
+
     typedef char int8;
     typedef unsigned char uint8;
 
@@ -15,6 +18,8 @@ namespace mr
     typedef unsigned long uint64;
 
     typedef std::vector<int8> bytelist;
+
+    typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
 }
 
 #endif

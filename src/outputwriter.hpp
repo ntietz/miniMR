@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include "keyvaluepair.hpp"
+#include "diskcache.hpp"
 
 namespace mr
 {
@@ -16,13 +17,19 @@ namespace mr
     class MapperCollector : public OutputCollector
     {
       public:
+        // TODO constructor
+        MapperCollector(std::string baseFilename, uint64 memLimit, Comparator comparator);
         void collect(KeyValuePair& pair);
 
-        KeyValuePairList getContents();
-        // TODO change ^ to receive an iterator, to handle disk caching
+        DiskCacheIterator getIterator();
       private:
-        KeyValuePairList contents;
-        // TODO add flush-to-disk capability
+        SortedDiskCache cache;
+    };
+
+    class ReducerCollector : public OutputCollector
+    {
+      public:
+        void collect(KeyValuePair& pair);
     };
 }
 
