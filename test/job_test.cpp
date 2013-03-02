@@ -80,7 +80,7 @@ TEST(JobTest, Blank)
         return left.key < right.key;
     };
 
-    mr::MapperInput* mapperInput = new mr::MapIntegerReader(10000);
+    mr::MapperInput* mapperInput = new mr::MapIntegerReader(100000);
 
     mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, 0);
     //job.disableSort();

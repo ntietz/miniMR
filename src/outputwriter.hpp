@@ -13,17 +13,19 @@ namespace mr
         virtual void collect(KeyValuePair&) = 0;
     };
 
-    // MapperCollector is not synchronized, since each should only be used by one mapper.
+    // MapperCollector is synchronized so that all the mappers output into the same cache
     class MapperCollector : public OutputCollector
     {
       public:
         // TODO constructor
-        MapperCollector(std::string baseFilename, uint64 memLimit, Comparator comparator);
+        //MapperCollector(std::string baseFilename, uint64 memLimit, Comparator comparator);
+        MapperCollector(SortedDiskCache* cache_, std::mutex* cacheLock_);
         void collect(KeyValuePair& pair);
 
-        DiskCacheIterator getIterator();
+        //DiskCacheIterator getIterator();
       private:
-        SortedDiskCache cache;
+        SortedDiskCache* cache;
+        std::mutex* cacheLock;
     };
 
     class ReducerCollector : public OutputCollector

@@ -38,6 +38,9 @@ namespace mr
         std::vector<OutputCollector*> reducerCollectors;
         OutputCollector* outputWriter;
 
+        SortedDiskCache* mapperDiskCache;
+        std::mutex* mapperDiskCacheMutex;
+
         bool reduceFlag;
     };
 }

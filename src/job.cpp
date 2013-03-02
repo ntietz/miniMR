@@ -25,8 +25,12 @@ namespace mr
         //reducerCollector = reducerCollector_;
         outputWriter = outputWriter_;
 
+        mapperDiskCache = new SortedDiskCache("foobar", 10240, comparator);
+        mapperDiskCacheMutex = new std::mutex();
+
         for (uint32 i = 0; i < numMappers; ++i) {
-            mapperCollectors.push_back(new MapperCollector("foobar", 10240, comparator));
+            //mapperCollectors.push_back(new MapperCollector("foobar", 10240, comparator));
+            mapperCollectors.push_back(new MapperCollector(mapperDiskCache, mapperDiskCacheMutex));
             mappers.push_back(new Mapper(mapFunction, mapperCollectors[i]));
         }
 
