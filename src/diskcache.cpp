@@ -226,7 +226,6 @@ namespace mr
 
         mergeFiles();
 
-        // TODO add mergedBaseFilename
         return DiskCacheIterator(finalBaseFilename, 1, maxSize);
     }
 
@@ -317,7 +316,6 @@ namespace mr
                 }
             }
 
-            // TODO do a numFiles-merge, outputting as we go
             bool allEmpty = false;
             while (!allEmpty)
             {
@@ -325,25 +323,21 @@ namespace mr
                 KeyValuePair min;
                 for (int currentFile = 0; currentFile < numFiles; ++currentFile)
                 {
-                    // TODO if buffer is empty, fill it up!
                     if (bufferSizes[currentFile] == 0)
                     {
                         fillBuffer(currentFile);
                     }
 
-                    // TODO if the buffer is empty, continue!
                     if (bufferSizes[currentFile] == 0)
                     {
                         continue;
                     }
 
-                    // TODO if min isn't set, set it!
                     if (minIndex == -1)
                     {
                         minIndex = currentFile;
                         min = buffers[currentFile][bufferPositions[minIndex]];
                     }
-                    // TODO check if the current one is lower
                     else if (comparator( buffers[currentFile][bufferPositions[currentFile]]
                                        , buffers[minIndex][bufferPositions[minIndex]]))
                     {
