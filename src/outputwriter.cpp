@@ -2,16 +2,6 @@
 
 namespace mr
 {
-    /*
-    MapperCollector::MapperCollector( std::string baseFilename
-                                    , uint64 memLimit
-                                    , Comparator comparator
-                                    ) : cache(baseFilename, memLimit, comparator)
-    {
-        // ...
-    }
-    */
-
     MapperCollector::MapperCollector( SortedDiskCache* cache_
                                     , std::mutex* cacheLock_
                                     )
@@ -27,10 +17,18 @@ namespace mr
         cacheLock->unlock();
     }
 
-    /*
-    DiskCacheIterator MapperCollector::getIterator()
+    ReducerCollector::ReducerCollector( UnsortedDiskCache* cache_
+                                      , std::mutex* cacheLock_
+                                      )
     {
-        return cache.getIterator();
+        cache = cache_;
+        cacheLock = cacheLock_;
     }
-    */
+
+    void ReducerCollector::collect(KeyValuePair& pair)
+    {
+        cacheLock->lock();
+        cache->submit(pair);
+        cacheLock->unlock();
+    }
 }

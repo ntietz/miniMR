@@ -17,12 +17,9 @@ namespace mr
     class MapperCollector : public OutputCollector
     {
       public:
-        // TODO constructor
-        //MapperCollector(std::string baseFilename, uint64 memLimit, Comparator comparator);
         MapperCollector(SortedDiskCache* cache_, std::mutex* cacheLock_);
         void collect(KeyValuePair& pair);
 
-        //DiskCacheIterator getIterator();
       private:
         SortedDiskCache* cache;
         std::mutex* cacheLock;
@@ -31,7 +28,12 @@ namespace mr
     class ReducerCollector : public OutputCollector
     {
       public:
+        ReducerCollector(UnsortedDiskCache* cache_, std::mutex* cacheLock_);
         void collect(KeyValuePair& pair);
+
+      private:
+        UnsortedDiskCache* cache;
+        std::mutex* cacheLock;
     };
 }
 

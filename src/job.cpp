@@ -29,14 +29,16 @@ namespace mr
         mapperDiskCacheMutex = new std::mutex();
 
         for (uint32 i = 0; i < numMappers; ++i) {
-            //mapperCollectors.push_back(new MapperCollector("foobar", 10240, comparator));
             mapperCollectors.push_back(new MapperCollector(mapperDiskCache, mapperDiskCacheMutex));
             mappers.push_back(new Mapper(mapFunction, mapperCollectors[i]));
         }
 
+        reducerDiskCache = new UnsortedDiskCache("barfoo", 10240);
+        reducerDiskCacheMutex = new std::mutex();
+
         for (uint32 i = 0; i < numReducers; ++i) {
-            //reducerCollectors.push_back(new MapperCollector()); // TODO change the name of MapperCollector to be generic
-            //reducers.push_back(new Reducer(reduceFunction, reducerCollectors[i]));
+            reducerCollectors.push_back(new ReducerCollector(reducerDiskCache, reducerDiskCacheMutex));
+            reducers.push_back(new Reducer(reduceFunction, reducerCollectors[i]));
         }
     }
 

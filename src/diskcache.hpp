@@ -31,6 +31,7 @@ namespace mr
         virtual void submit(KeyValuePair&);
         virtual void flush();
 
+        // TODO add parameter for iterator memory limit
         Iterator getIterator();
 
       protected:
@@ -51,6 +52,7 @@ namespace mr
 
         void flush();
 
+        // TODO add parameter for iterator memory limit
         Iterator getIterator();
       protected:
         std::string finalBaseFilename;

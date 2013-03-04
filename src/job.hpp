@@ -41,6 +41,9 @@ namespace mr
         SortedDiskCache* mapperDiskCache;
         std::mutex* mapperDiskCacheMutex;
 
+        UnsortedDiskCache* reducerDiskCache;
+        std::mutex* reducerDiskCacheMutex;
+
         bool reduceFlag;
     };
 }
