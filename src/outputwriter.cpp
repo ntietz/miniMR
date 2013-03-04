@@ -2,6 +2,11 @@
 
 namespace mr
 {
+    OutputCollector::~OutputCollector()
+    {
+        // ...
+    }
+
     MapperCollector::MapperCollector( SortedDiskCache* cache_
                                     , std::mutex* cacheLock_
                                     )

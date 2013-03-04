@@ -11,10 +11,12 @@ namespace mr
                               , ReduceFunction reduceFunction_
                               , Comparator comparator_
                               , MapperInput* inputReader_
+                              , uint64 memoryLimit_
                               )
     {
         numMappers = numMappers_;
         numReducers = numReducers_;
+        memoryLimit = memoryLimit_;
 
         reduceFlag = true;
 
@@ -23,7 +25,7 @@ namespace mr
         comparator = comparator_;
         inputReader = inputReader_;
 
-        mapperDiskCache = new SortedDiskCache("foobar", 10240, comparator);
+        mapperDiskCache = new SortedDiskCache("mapper_part", (uint64) (0.9f * memoryLimit), comparator);
         mapperDiskCacheMutex = new std::mutex();
 
         for (uint32 i = 0; i < numMappers; ++i)
@@ -32,7 +34,7 @@ namespace mr
             mappers.push_back(new Mapper(mapFunction, mapperCollectors[i]));
         }
 
-        reducerDiskCache = new UnsortedDiskCache("barfoo", 10240);
+        reducerDiskCache = new UnsortedDiskCache("reducer_part", (uint64) (0.9f * memoryLimit));
         reducerDiskCacheMutex = new std::mutex();
 
         for (uint32 i = 0; i < numReducers; ++i)
@@ -40,6 +42,33 @@ namespace mr
             reducerCollectors.push_back(new ReducerCollector(reducerDiskCache, reducerDiskCacheMutex));
             reducers.push_back(new Reducer(reduceFunction, reducerCollectors[i]));
         }
+    }
+
+    MapReduceJob::~MapReduceJob()
+    {
+        for (OutputCollector* each : mapperCollectors)
+        {
+            delete each;
+        }
+
+        for (Mapper* each : mappers)
+        {
+            delete each;
+        }
+
+        for (OutputCollector* each : reducerCollectors)
+        {
+            delete each;
+        }
+
+        for (Reducer* each : reducers)
+        {
+            delete each;
+        }
+
+        delete mapperDiskCache;
+        delete mapperDiskCacheMutex;
+        delete reducerDiskCacheMutex;
     }
 
     void MapReduceJob::run()
@@ -64,6 +93,8 @@ namespace mr
             std::cout << "> Mapper " << i << " finished" << std::endl;
         }
 
+        delete [] mapThreads;
+
         std::cout << std::endl;
         std::cout << "All mappers finished. Starting reducers...\n";
         std::cout << std::endl;
@@ -87,6 +118,8 @@ namespace mr
             reduceThreads[i].join();
             std::cout << "> Reducer " << i << " finished" << std::endl;
         }
+
+        delete [] reduceThreads;
 
         std::cout << std::endl;
         std::cout << "All reducers finished.\n";

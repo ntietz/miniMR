@@ -10,6 +10,7 @@ namespace mr
     class OutputCollector
     {
       public:
+        virtual ~OutputCollector();
         virtual void collect(KeyValuePair&) = 0;
     };
 

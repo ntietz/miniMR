@@ -14,9 +14,8 @@ namespace mr
     class MapReduceJob
     {
       public:
-        // TODO add options for memory limit
-        MapReduceJob(uint32,MapFunction,uint32,ReduceFunction,Comparator,MapperInput*);
-        // TODO destructor
+        MapReduceJob(uint32,MapFunction,uint32,ReduceFunction,Comparator,MapperInput*,uint64);
+        ~MapReduceJob();
 
         void run();
 
@@ -26,14 +25,14 @@ namespace mr
         UnsortedDiskCache* getResults();
 
       private:
-        int numMappers;
-        int numReducers;
+        uint32 numMappers;
+        uint32 numReducers;
+        uint64 memoryLimit;
 
         MapFunction mapFunction;
         ReduceFunction reduceFunction;
         Comparator comparator;
 
-        // TODO delete the pointers in the destructor
         std::vector<Mapper*> mappers;
         std::vector<Reducer*> reducers;
         MapperInput* inputReader;

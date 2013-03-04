@@ -89,7 +89,7 @@ TEST(JobTest, Blank)
 
     mr::MapperInput* mapperInput = new mr::MapIntegerReader(LIMIT);
 
-    mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput);
+    mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, 10240);
     //job.disableSort();
     //job.disableReduce();
     job.run();
@@ -104,4 +104,7 @@ TEST(JobTest, Blank)
     }
 
     ASSERT_EQ(LIMIT, results.size());
+
+    delete mapperInput;
+    delete resultCache;
 }

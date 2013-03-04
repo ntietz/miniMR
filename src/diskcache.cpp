@@ -166,13 +166,13 @@ namespace mr
             {
                 uint32 keySize;
                 in->read((char*) &keySize, sizeof(uint32));
-                bytelist key;
+                bytelist key(keySize);
                 key.resize(keySize);
                 in->read(key.data(), keySize);
 
                 uint32 valueSize;
                 in->read((char*) &valueSize, sizeof(uint32));
-                bytelist value;
+                bytelist value(valueSize);
                 value.resize(valueSize);
                 in->read(value.data(), valueSize);
 
@@ -282,13 +282,13 @@ namespace mr
             {
                 uint32 keySize;
                 in[currentFile].read((char*) &keySize, sizeof(uint32));
-                bytelist key;
+                bytelist key(keySize);
                 key.resize(keySize);
                 in[currentFile].read(key.data(), keySize);
 
                 uint32 valueSize;
                 in[currentFile].read((char*) &valueSize, sizeof(uint32));
-                bytelist value;
+                bytelist value(valueSize);
                 value.resize(valueSize);
                 in[currentFile].read(value.data(), valueSize);
 
