@@ -14,7 +14,7 @@ namespace mr
     class MapReduceJob
     {
       public:
-        MapReduceJob(uint32,MapFunction,uint32,ReduceFunction,Comparator,MapperInput*,OutputCollector*);
+        MapReduceJob(uint32,MapFunction,uint32,ReduceFunction,Comparator,MapperInput*);
         // TODO destructor
 
         void run();
@@ -36,7 +36,6 @@ namespace mr
         MapperInput* inputReader;
         std::vector<OutputCollector*> mapperCollectors;
         std::vector<OutputCollector*> reducerCollectors;
-        OutputCollector* outputWriter;
 
         SortedDiskCache* mapperDiskCache;
         std::mutex* mapperDiskCacheMutex;

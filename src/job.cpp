@@ -10,7 +10,6 @@ namespace mr
                               , ReduceFunction reduceFunction_
                               , Comparator comparator_
                               , MapperInput* inputReader_
-                              , OutputCollector* outputWriter_
                               )
     {
         numMappers = numMappers_;
@@ -22,8 +21,6 @@ namespace mr
         reduceFunction = reduceFunction_;
         comparator = comparator_;
         inputReader = inputReader_;
-        //reducerCollector = reducerCollector_;
-        outputWriter = outputWriter_;
 
         mapperDiskCache = new SortedDiskCache("foobar", 10240, comparator);
         mapperDiskCacheMutex = new std::mutex();
