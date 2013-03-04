@@ -10,4 +10,31 @@ namespace mr
             readLock.unlock();
             return result;
         }
+
+        ReducerInput::ReducerInput(DiskCacheIterator* iterator_)
+        {
+            iterator = iterator_;
+        }
+
+        bool ReducerInput::requestNext(bytelist& key, std::vector<bytelist>& values)
+        {
+            iteratorLock.lock();
+
+            bool result = false;
+            if (iterator->hasNext())
+            {
+                values.clear();
+                key = iterator->peek().key;
+
+                while (iterator->peek().key == key)
+                {
+                    values.push_back(iterator->getNext().value);
+                }
+
+                result = true;
+            }
+
+            iteratorLock.unlock();
+            return true;
+        }
 }

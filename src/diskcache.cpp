@@ -140,6 +140,11 @@ namespace mr
         return result;
     }
 
+    KeyValuePair& DiskCacheIterator::peek()
+    {
+        return contents.back();
+    }
+
     void DiskCacheIterator::populateCache()
     {
         while (currentFile < numFiles)

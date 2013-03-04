@@ -71,6 +71,7 @@ namespace mr
 
         bool hasNext();
         KeyValuePair getNext();
+        KeyValuePair& peek();
 
       protected:
         std::string baseFilename;
