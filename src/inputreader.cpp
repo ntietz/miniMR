@@ -35,6 +35,6 @@ namespace mr
             }
 
             iteratorLock.unlock();
-            return true;
+            return result;
         }
 }

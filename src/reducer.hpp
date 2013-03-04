@@ -24,7 +24,7 @@ namespace mr
         OutputCollector* collector;
     };
 
-    void reducerFunction(Reducer& reducer, ReducerInput& input);
+    void reducerFunction(Reducer* reducer, ReducerInput* input);
 }
 
 #endif

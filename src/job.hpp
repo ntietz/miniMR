@@ -14,6 +14,7 @@ namespace mr
     class MapReduceJob
     {
       public:
+        // TODO add options for memory limit
         MapReduceJob(uint32,MapFunction,uint32,ReduceFunction,Comparator,MapperInput*);
         // TODO destructor
 
@@ -21,6 +22,9 @@ namespace mr
 
         void disableSort();
         void disableReduce();
+
+        // TODO add getIterator() to get results
+        UnsortedDiskCache* getResults();
 
       private:
         int numMappers;

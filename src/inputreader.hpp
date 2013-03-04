@@ -22,7 +22,7 @@ namespace mr
     {
       public:
         ReducerInput(DiskCacheIterator* iterator_);
-        bool requestNext(bytelist&, std::vector<bytelist>&); // Note: this must be synchronized
+        bool requestNext(bytelist&, std::vector<bytelist>&);
 
       private:
         DiskCacheIterator* iterator;

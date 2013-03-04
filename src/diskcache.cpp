@@ -234,7 +234,6 @@ namespace mr
         return DiskCacheIterator(finalBaseFilename, 1, maxSize);
     }
 
-    //void SortedDiskCacheIterator::populateCache()
     void SortedDiskCache::mergeFiles()
     {
         std::ifstream* in = new std::ifstream[numFiles];
@@ -244,6 +243,13 @@ namespace mr
         finalBaseFilename = baseFilename + "merged";
         std::string finalFilename = generateFilename(finalBaseFilename, 0);
         std::ofstream out(finalFilename);
+
+        if (numFiles == 0)
+        {
+            uint32 total = 0;
+            out.write((char*) &total, sizeof(uint32));
+            return;
+        }
 
         uint64 maxBufferSize = maxSize / numFiles;
         std::vector<KeyValuePair>* buffers = new std::vector<KeyValuePair>[numFiles];

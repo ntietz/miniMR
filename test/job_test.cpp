@@ -4,13 +4,14 @@
 #include "reducer.hpp"
 #include "inputreader.hpp"
 #include "keyvaluepair.hpp"
+#include "diskcache.hpp"
 
 namespace mr
 {
     class MapIntegerReader : public MapperInput
     {
       public:
-        MapIntegerReader(int limit_)
+        MapIntegerReader(unsigned int limit_)
         {
             limit = limit_;
             last = 0;
@@ -54,8 +55,9 @@ namespace mr
 
 TEST(JobTest, Blank)
 {
-    int numMappers = 4;
-    int numReducers = 4;
+    const unsigned int LIMIT = 100000;
+    mr::uint32 numMappers = 4;
+    mr::uint32 numReducers = 4;
 
     mr::MapFunction mapFunction = []( mr::KeyValuePair& pair
                                     , mr::OutputCollector* collector
@@ -63,6 +65,7 @@ TEST(JobTest, Blank)
     {
         int& keynum = *((int*) pair.key.data());
         int& valuenum = *((int*) pair.value.data());
+        collector->collect(pair);
     };
 
     mr::ReduceFunction reduceFunction = []( mr::bytelist key
@@ -70,21 +73,35 @@ TEST(JobTest, Blank)
                                           , mr::OutputCollector* collector
                                           )
     {
-        
+        for (int i = 0; i < values.size(); ++i)
+        {
+            mr::KeyValuePair pair(key, values[i]);
+            collector->collect(pair);
+        }
     };
 
     mr::Comparator comparator = []( const mr::KeyValuePair& left
                                   , const mr::KeyValuePair& right
                                   )
     {
-        return left.key < right.key;
+        return left.key.size() < right.key.size();
     };
 
-    mr::MapperInput* mapperInput = new mr::MapIntegerReader(100000);
+    mr::MapperInput* mapperInput = new mr::MapIntegerReader(LIMIT);
 
     mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput);
     //job.disableSort();
     //job.disableReduce();
     job.run();
 
+    mr::UnsortedDiskCache* resultCache = job.getResults();
+    mr::DiskCacheIterator resultIterator = resultCache->getIterator();
+
+    std::vector<mr::KeyValuePair> results;
+    while (resultIterator.hasNext())
+    {
+        results.push_back(resultIterator.getNext());
+    }
+
+    ASSERT_EQ(LIMIT, results.size());
 }

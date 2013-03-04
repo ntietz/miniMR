@@ -15,14 +15,14 @@ namespace mr
         reduceFunction(key, values, collector);
     }
 
-    void reducerFunction(Reducer& reducer, ReducerInput& input)
+    void reducerFunction(Reducer* reducer, ReducerInput* input)
     {
         bytelist key;
         std::vector<bytelist> values;
 
-        while (input.requestNext(key, values))
+        while (input->requestNext(key, values))
         {
-            reducer.submit(key, values);
+            reducer->submit(key, values);
         }
     }
 }
