@@ -89,13 +89,13 @@ TEST(JobTest, Blank)
 
     mr::MapperInput* mapperInput = new mr::MapIntegerReader(LIMIT);
 
-    mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, 10240);
+    mr::MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, 102400000);
     //job.disableSort();
     //job.disableReduce();
     job.run();
 
     mr::UnsortedDiskCache* resultCache = job.getResults();
-    mr::DiskCacheIterator resultIterator = resultCache->getIterator();
+    mr::DiskCacheIterator resultIterator = resultCache->getIterator(102400);
 
     std::vector<mr::KeyValuePair> results;
     while (resultIterator.hasNext())

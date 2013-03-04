@@ -31,8 +31,7 @@ namespace mr
         virtual void submit(KeyValuePair&);
         virtual void flush();
 
-        // TODO add parameter for iterator memory limit
-        Iterator getIterator();
+        Iterator getIterator(uint64 memoryLimit_);
 
       protected:
         std::string baseFilename;
@@ -52,8 +51,7 @@ namespace mr
 
         void flush();
 
-        // TODO add parameter for iterator memory limit
-        Iterator getIterator();
+        Iterator getIterator(uint64 memoryLimit_);
       protected:
         std::string finalBaseFilename;
         Comparator comparator;

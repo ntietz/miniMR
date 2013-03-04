@@ -19,7 +19,6 @@ namespace mr
 
         void run();
 
-        void disableSort();
         void disableReduce();
 
         UnsortedDiskCache* getResults();

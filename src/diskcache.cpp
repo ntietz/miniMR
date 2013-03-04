@@ -80,14 +80,14 @@ namespace mr
         size = 0;
     }
 
-    UnsortedDiskCache::Iterator UnsortedDiskCache::getIterator()
+    UnsortedDiskCache::Iterator UnsortedDiskCache::getIterator(uint64 memoryLimit_)
     {
         if (size > 0)
         {
             flush();
         }
 
-        return DiskCacheIterator(baseFilename, numFiles, maxSize);
+        return DiskCacheIterator(baseFilename, numFiles, memoryLimit_);
     }
 
     DiskCacheIterator::DiskCacheIterator( std::string baseFilename_
@@ -222,7 +222,7 @@ namespace mr
         UnsortedDiskCache::flush();
     }
 
-    SortedDiskCache::Iterator SortedDiskCache::getIterator()
+    SortedDiskCache::Iterator SortedDiskCache::getIterator(uint64 memoryLimit_)
     {
         if (size > 0)
         {
@@ -231,7 +231,7 @@ namespace mr
 
         mergeFiles();
 
-        return DiskCacheIterator(finalBaseFilename, 1, maxSize);
+        return DiskCacheIterator(finalBaseFilename, 1, memoryLimit_);
     }
 
     void SortedDiskCache::mergeFiles()

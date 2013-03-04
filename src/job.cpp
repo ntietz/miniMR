@@ -99,7 +99,7 @@ namespace mr
         std::cout << "All mappers finished. Starting reducers...\n";
         std::cout << std::endl;
 
-        DiskCacheIterator mapperOutputIterator = mapperDiskCache->getIterator();
+        DiskCacheIterator mapperOutputIterator = mapperDiskCache->getIterator( (uint64) (0.05f * memoryLimit));
         ReducerInput reducerInput(&mapperOutputIterator);
 
         std::thread* reduceThreads = new std::thread[numReducers];

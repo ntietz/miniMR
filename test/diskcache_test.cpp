@@ -33,7 +33,7 @@ TEST(DiskCacheTest, UnsortedDiskCacheProperties)
         cache.submit(keyBytes, valueBytes);
     }
 
-    mr::UnsortedDiskCache::Iterator iterator = cache.getIterator();
+    mr::UnsortedDiskCache::Iterator iterator = cache.getIterator(1024);
 
     for (int index = 0; index < submittedPairs.size(); ++index)
     {
@@ -66,7 +66,7 @@ TEST(DiskCacheTest, SortedDiskCacheProperties)
         cache.submit(keyBytes, valueBytes);
     }
 
-    mr::SortedDiskCache::Iterator iterator = cache.getIterator();
+    mr::SortedDiskCache::Iterator iterator = cache.getIterator(1024);
 
     while (iterator.hasNext())
     {
