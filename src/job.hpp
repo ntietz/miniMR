@@ -23,7 +23,6 @@ namespace mr
         void disableSort();
         void disableReduce();
 
-        // TODO add getIterator() to get results
         UnsortedDiskCache* getResults();
 
       private:
