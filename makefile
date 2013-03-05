@@ -32,7 +32,7 @@ compile : clean init mapreduce
 run_tests : tests
 	bin/tests.out
 
-mapreduce : mapper reducer inputreader outputwriter job keyvaluepair diskcache
+mapreduce : mapper reducer inputreader outputwriter job keyvaluepair diskcache impls
 
 mapper : 
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/mapper.cpp -c -o ${BIN}/mapper.o
@@ -54,6 +54,9 @@ keyvaluepair :
 
 diskcache :
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/diskcache.cpp -c -o ${BIN}/diskcache.o
+
+impls :
+	${COMPILER} ${COMPILE_OPTS} ${SRC}/impl/inputreaders.cpp -c -o ${BIN}/inputreaders.o
 
 gtest-all.o : ${GTEST_SRCS}
 	${COMPILER} ${TEST_FLAGS} -c ${GTEST_DIR}/src/gtest-all.cc

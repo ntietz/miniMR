@@ -5,6 +5,7 @@
 #include "inputreader.hpp"
 #include "keyvaluepair.hpp"
 #include "diskcache.hpp"
+#include "impl/inputreaders.hpp"
 
 namespace mr
 {
