@@ -86,5 +86,62 @@ namespace mr
             return result;
         }
     }
+
+    CSVInputReader::CSVInputReader(std::string filename_)
+    {
+        filename = filename_;
+        delimiter = ',';
+        in.open(filename);
+    }
+
+    CSVInputReader::CSVInputReader(std::string filename_, char delimiter_)
+    {
+        filename = filename_;
+        delimiter = delimiter_;
+        in.open(filename);
+    }
+
+    KeyValuePair* CSVInputReader::getNext()
+    {
+        std::string line;
+
+        if (std::getline(in, line))
+        {
+            std::string::size_type delimiterIndex = line.find(delimiter);
+            if (delimiterIndex == std::string::npos)
+            {
+                return NULL;
+            }
+            
+            std::string left = line.substr(0, delimiterIndex);
+            std::string right = line.substr(delimiterIndex+1);
+
+            KeyValuePair* result = new KeyValuePair();
+            bytelist& key = result->key;
+            bytelist& value = result->value;
+
+            uint32 keySize = left.size() + 1;
+            key.resize(keySize);
+            for (int i = 0; i < keySize - 1; ++i)
+            {
+                key[i] = left[i];
+            }
+            key[keySize - 1] = '\0';
+
+            uint32 valueSize = right.size() + 1;
+            value.resize(valueSize);
+            for (int i = 0; i < valueSize - 1; ++i)
+            {
+                value[i] = right[i];
+            }
+            value[valueSize - 1] = '\0';
+
+            return result;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
 }
 

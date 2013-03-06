@@ -37,13 +37,14 @@ namespace mr
     {
       public:
         CSVInputReader(std::string filename_);
-        CSVInputReader(std::string filename_, std::string delimiter_);
+        CSVInputReader(std::string filename_, char delimiter_);
 
       protected:
         KeyValuePair* getNext();
 
         std::string filename;
-        std::string delimiter;
+        char delimiter;
+        std::ifstream in;
     };
 }
 
