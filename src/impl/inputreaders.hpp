@@ -19,10 +19,10 @@ namespace mr
         std::ifstream in;
     };
 
-    class SentenceInputReader : public MapperInput
+    class ParagraphInputReader : public MapperInput
     {
       public:
-        SentenceInputReader(std::string filename_, std::string delimiter_);
+        ParagraphInputReader(std::string filename_, std::string delimiter_);
 
       protected:
         KeyValuePair* getNext();
