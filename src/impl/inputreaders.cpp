@@ -42,10 +42,9 @@ namespace mr
         }
     }
 
-    ParagraphInputReader::ParagraphInputReader(std::string filename_, std::string delimiter_)
+    ParagraphInputReader::ParagraphInputReader(std::string filename_)
     {
         filename = filename_;
-        delimiter = delimiter_;
         sentenceNumber = 0;
         in.open(filename);
     }
@@ -57,7 +56,7 @@ namespace mr
 
         while (std::getline(in, line) && !line.empty())
         {
-            buffer += line;
+            buffer += line + '\n';
         }
 
         if (buffer.empty())

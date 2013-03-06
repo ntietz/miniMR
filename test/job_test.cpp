@@ -54,7 +54,7 @@ namespace mr
     };
 }
 
-TEST(JobTest, Blank)
+TEST(JobTest, IntegrationTest)
 {
     const unsigned int LIMIT = 100000;
     mr::uint32 numMappers = 4;

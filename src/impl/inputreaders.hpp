@@ -22,7 +22,7 @@ namespace mr
     class ParagraphInputReader : public MapperInput
     {
       public:
-        ParagraphInputReader(std::string filename_, std::string delimiter_);
+        ParagraphInputReader(std::string filename_);
 
       protected:
         KeyValuePair* getNext();
