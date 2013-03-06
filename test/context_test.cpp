@@ -64,7 +64,3 @@ TEST(CSVInputReader, GetsData)
     ASSERT_EQ(50, numRead);
 }
 
-TEST(OutputWriterTest, Blank)
-{
-
-}
