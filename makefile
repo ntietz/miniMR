@@ -29,6 +29,8 @@ init :
 
 compile : clean init mapreduce
 
+samples : compile wordcount
+
 run_tests : tests
 	bin/tests.out
 
@@ -57,6 +59,9 @@ diskcache :
 
 impls :
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/impl/inputreaders.cpp -c -o ${BIN}/inputreaders.o
+
+wordcount :
+	${COMPILER} ${COMPILE_OPTS} samples/wordcount_constitution.cpp bin/*.o -o ${BIN}/wordcount.out
 
 gtest-all.o : ${GTEST_SRCS}
 	${COMPILER} ${TEST_FLAGS} -c ${GTEST_DIR}/src/gtest-all.cc

@@ -10,14 +10,14 @@
 namespace mr
 {
 
-    typedef std::function<void(bytelist,std::vector<bytelist>,OutputCollector*)> ReduceFunction;
+    typedef std::function<void(bytelist&,std::vector<bytelist>&,OutputCollector*)> ReduceFunction;
 
     class Reducer
     {
       public:
         Reducer(ReduceFunction,OutputCollector*);
 
-        void submit(bytelist, std::vector<bytelist>);
+        void submit(bytelist&, std::vector<bytelist>&);
 
       private:
         ReduceFunction reduceFunction;

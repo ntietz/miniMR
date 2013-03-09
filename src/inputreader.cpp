@@ -26,7 +26,7 @@ namespace mr
                 values.clear();
                 key = iterator->peek().key;
 
-                while (iterator->peek().key == key)
+                while (iterator->hasNext() && iterator->peek().key == key)
                 {
                     values.push_back(iterator->getNext().value);
                 }

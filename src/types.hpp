@@ -20,6 +20,10 @@ namespace mr
     typedef std::vector<int8> bytelist;
 
     typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
+
+    const uint32 KILOBYTE = 1024;
+    const uint32 MEGABYTE = 1024 * KILOBYTE;
+    const uint32 GIGABYTE = 1024 * MEGABYTE;
 }
 
 #endif

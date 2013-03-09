@@ -5,7 +5,6 @@
 #include "inputreader.hpp"
 #include "keyvaluepair.hpp"
 #include "diskcache.hpp"
-#include "impl/inputreaders.hpp"
 
 namespace mr
 {
@@ -69,8 +68,8 @@ TEST(JobTest, IntegrationTest)
         collector->collect(pair);
     };
 
-    mr::ReduceFunction reduceFunction = []( mr::bytelist key
-                                          , std::vector<mr::bytelist> values
+    mr::ReduceFunction reduceFunction = []( mr::bytelist& key
+                                          , std::vector<mr::bytelist>& values
                                           , mr::OutputCollector* collector
                                           )
     {

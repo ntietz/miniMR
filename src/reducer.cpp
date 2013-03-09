@@ -10,7 +10,7 @@ namespace mr
         collector = collector_;
     }
 
-    void Reducer::submit(bytelist key, std::vector<bytelist> values)
+    void Reducer::submit(bytelist& key, std::vector<bytelist>& values)
     {
         reduceFunction(key, values, collector);
     }
