@@ -5,9 +5,11 @@ namespace mr
 {
         KeyValuePair* MapperInput::requestNext()
         {
-            readLock.lock();
+            //readLock.lock();
+            while (readLock.test_and_set()) { }
             KeyValuePair* result = getNext();
-            readLock.unlock();
+            readLock.clear();
+            //readLock.unlock();
             return result;
         }
 

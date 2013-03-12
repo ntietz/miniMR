@@ -1,6 +1,7 @@
 #ifndef _INPUTREADER_HPP_
 #define _INPUTREADER_HPP_
 
+#include <atomic>
 #include <mutex>
 #include "keyvaluepair.hpp"
 #include "diskcache.hpp"
@@ -16,7 +17,7 @@ namespace mr
 
       protected:
         virtual KeyValuePair* getNext() = 0;
-        std::mutex readLock;
+        std::atomic_flag readLock;
     };
 
     class ReducerInput

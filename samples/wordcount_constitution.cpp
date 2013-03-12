@@ -75,16 +75,22 @@ bool comparator( const KeyValuePair& left
     return left.key < right.key;
 }
 
-int main()
+int main(int argc, char** argv)
 {
     uint64 memoryLimit = 4 * GIGABYTE;
-    std::cout << "Memory limit is: " << memoryLimit << std::endl;
     uint32 numMappers = 4;
     uint32 numReducers = 4;
 
     std::mutex outlock;
 
-    MapperInput* mapperInput = new LineInputReader("./websters.txt");
+    if (argc < 2)
+    {
+        std::cout << "Error: you must provide a filename." << std::endl;
+        return 1;
+    }
+
+    char* filename = argv[1];
+    MapperInput* mapperInput = new LineInputReader(filename);
     //MapperInput* mapperInput = new LineInputReader("test/data/constitution.txt");
 
     MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, memoryLimit);
@@ -94,14 +100,23 @@ int main()
 
     UnsortedDiskCache* resultCache = job.getResults();
     DiskCacheIterator resultIterator = resultCache->getIterator(memoryLimit);
+    int max = 0;
+    std::string mostFrequent;
     while (resultIterator.hasNext())
     {
         KeyValuePair pair = resultIterator.getNext();
         char* word = pair.key.data();
         int& count = *((int*) pair.value.data());
+        if (count > max)
+        {
+            max = count;
+            mostFrequent = word;
+        }
 
         out << word << "," << count << std::endl;
     }
+
+    std::cout << "Most frequent: " << mostFrequent << ", " << max << std::endl;
 
     delete mapperInput;
     delete job.getResults();
