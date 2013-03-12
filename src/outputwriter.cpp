@@ -8,7 +8,7 @@ namespace mr
     }
 
     MapperCollector::MapperCollector( SortedDiskCache* cache_
-                                    , std::mutex* cacheLock_
+                                    , std::atomic_flag* cacheLock_
                                     )
     {
         cache = cache_;
@@ -17,13 +17,15 @@ namespace mr
 
     void MapperCollector::collect(KeyValuePair& pair)
     {
-        cacheLock->lock();
+        //cacheLock->lock();
+        while (cacheLock->test_and_set()) { }
         cache->submit(pair);
-        cacheLock->unlock();
+        cacheLock->clear();
+        //cacheLock->unlock();
     }
 
     ReducerCollector::ReducerCollector( UnsortedDiskCache* cache_
-                                      , std::mutex* cacheLock_
+                                      , std::atomic_flag* cacheLock_
                                       )
     {
         cache = cache_;
@@ -32,8 +34,10 @@ namespace mr
 
     void ReducerCollector::collect(KeyValuePair& pair)
     {
-        cacheLock->lock();
+        //cacheLock->lock();
+        while (cacheLock->test_and_set()) { }
         cache->submit(pair);
-        cacheLock->unlock();
+        cacheLock->clear();
+        //cacheLock->unlock();
     }
 }

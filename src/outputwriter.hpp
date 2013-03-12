@@ -2,6 +2,7 @@
 #define _OUTPUTWRITER_HPP_
 
 #include <mutex>
+#include <atomic>
 #include "keyvaluepair.hpp"
 #include "diskcache.hpp"
 
@@ -18,23 +19,23 @@ namespace mr
     class MapperCollector : public OutputCollector
     {
       public:
-        MapperCollector(SortedDiskCache* cache_, std::mutex* cacheLock_);
+        MapperCollector(SortedDiskCache* cache_, std::atomic_flag* cacheLock_);
         void collect(KeyValuePair& pair);
 
       private:
         SortedDiskCache* cache;
-        std::mutex* cacheLock;
+        std::atomic_flag* cacheLock;
     };
 
     class ReducerCollector : public OutputCollector
     {
       public:
-        ReducerCollector(UnsortedDiskCache* cache_, std::mutex* cacheLock_);
+        ReducerCollector(UnsortedDiskCache* cache_, std::atomic_flag* cacheLock_);
         void collect(KeyValuePair& pair);
 
       private:
         UnsortedDiskCache* cache;
-        std::mutex* cacheLock;
+        std::atomic_flag* cacheLock;
     };
 }
 

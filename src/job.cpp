@@ -26,7 +26,7 @@ namespace mr
         inputReader = inputReader_;
 
         mapperDiskCache = new SortedDiskCache("mapper_part", (uint64) (0.9f * memoryLimit), comparator);
-        mapperDiskCacheMutex = new std::mutex();
+        mapperDiskCacheMutex = new std::atomic_flag();
 
         for (uint32 i = 0; i < numMappers; ++i)
         {
@@ -35,7 +35,7 @@ namespace mr
         }
 
         reducerDiskCache = new UnsortedDiskCache("reducer_part", (uint64) (0.9f * memoryLimit));
-        reducerDiskCacheMutex = new std::mutex();
+        reducerDiskCacheMutex = new std::atomic_flag();
 
         for (uint32 i = 0; i < numReducers; ++i)
         {

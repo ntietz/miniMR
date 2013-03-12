@@ -39,10 +39,10 @@ namespace mr
         std::vector<OutputCollector*> reducerCollectors;
 
         SortedDiskCache* mapperDiskCache;
-        std::mutex* mapperDiskCacheMutex;
+        std::atomic_flag* mapperDiskCacheMutex;
 
         UnsortedDiskCache* reducerDiskCache;
-        std::mutex* reducerDiskCacheMutex;
+        std::atomic_flag* reducerDiskCacheMutex;
 
         bool reduceFlag;
     };
