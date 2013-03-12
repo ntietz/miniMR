@@ -11,6 +11,7 @@ namespace mr
     class MapperInput
     {
       public:
+        virtual ~MapperInput() { }
         KeyValuePair* requestNext();
 
       protected:
@@ -21,6 +22,7 @@ namespace mr
     class ReducerInput
     {
       public:
+        virtual ~ReducerInput() { }
         ReducerInput(DiskCacheIterator* iterator_);
         bool requestNext(bytelist&, std::vector<bytelist>&);
 

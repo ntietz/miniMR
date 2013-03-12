@@ -10,6 +10,7 @@ namespace mr
     {
       public:
         LineInputReader(std::string filename_);
+        ~LineInputReader() { }
 
       protected:
         KeyValuePair* getNext();
@@ -23,6 +24,7 @@ namespace mr
     {
       public:
         ParagraphInputReader(std::string filename_);
+        ~ParagraphInputReader() { };
 
       protected:
         KeyValuePair* getNext();
@@ -38,6 +40,7 @@ namespace mr
       public:
         CSVInputReader(std::string filename_);
         CSVInputReader(std::string filename_, char delimiter_);
+        ~CSVInputReader() { }
 
       protected:
         KeyValuePair* getNext();

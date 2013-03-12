@@ -28,7 +28,7 @@ namespace mr
 
             uint32 valueSize = line.size() + 1;
             value.resize(valueSize);
-            for (int i = 0; i < valueSize - 1; ++i)
+            for (uint32 i = 0; i < valueSize - 1; ++i)
             {
                 value[i] = line[i];
             }
@@ -76,7 +76,7 @@ namespace mr
 
             uint32 valueSize = buffer.size() + 1;
             value.resize(valueSize);
-            for (int i = 0; i < valueSize - 1; ++i)
+            for (uint32 i = 0; i < valueSize - 1; ++i)
             {
                 value[i] = buffer[i];
             }
@@ -121,7 +121,7 @@ namespace mr
 
             uint32 keySize = left.size() + 1;
             key.resize(keySize);
-            for (int i = 0; i < keySize - 1; ++i)
+            for (uint32 i = 0; i < keySize - 1; ++i)
             {
                 key[i] = left[i];
             }
@@ -129,7 +129,7 @@ namespace mr
 
             uint32 valueSize = right.size() + 1;
             value.resize(valueSize);
-            for (int i = 0; i < valueSize - 1; ++i)
+            for (uint32 i = 0; i < valueSize - 1; ++i)
             {
                 value[i] = right[i];
             }

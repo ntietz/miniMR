@@ -218,8 +218,42 @@ namespace mr
 
     void SortedDiskCache::flush()
     {
-        std::sort(contents.begin(), contents.end(), comparator);
-        UnsortedDiskCache::flush();
+        auto fasterComparator = [&](const uint32& leftIndex, const uint32& rightIndex)
+        {
+            return comparator(contents[leftIndex], contents[rightIndex]);
+        };
+
+        std::vector<uint32> indices;
+        for (uint32 i = 0; i < contents.size(); ++i)
+        {
+            indices.push_back(i);
+        }
+
+        std::sort(indices.begin(), indices.end(), fasterComparator);
+
+        // FLUSH
+        int fileNumber = numFiles;
+        std::string filename = generateFilename(baseFilename, fileNumber);
+
+        std::ofstream out(filename.c_str());
+        uint32 numberOfRecords = contents.size();
+        out.write((char*) &numberOfRecords, sizeof(uint32));
+
+        //for (uint32 index = 0; index < contents.size(); ++index)
+        for (auto& index : indices)
+        {
+            uint32 keySize = contents[index].key.size();
+            out.write((char*) &keySize, sizeof(uint32));
+            out.write(contents[index].key.data(), keySize);
+
+            uint32 valueSize = contents[index].value.size();
+            out.write((char*) &valueSize, sizeof(uint32));
+            out.write(contents[index].value.data(), valueSize);
+        }
+
+        ++numFiles;
+        contents.clear();
+        size = 0;
     }
 
     SortedDiskCache::Iterator SortedDiskCache::getIterator(uint64 memoryLimit_)
@@ -256,7 +290,7 @@ namespace mr
         uint32* bufferPositions = new uint32[numFiles];
         uint64* bufferSizes = new uint64[numFiles];
 
-        for (int currentFile = 0; currentFile < numFiles; ++currentFile)
+        for (uint32 currentFile = 0; currentFile < numFiles; ++currentFile)
         {
             std::string filename = generateFilename(baseFilename, currentFile);
             in[currentFile].open(filename);
@@ -330,9 +364,9 @@ namespace mr
             bool allEmpty = false;
             while (!allEmpty)
             {
-                uint32 minIndex = -1;
+                int32 minIndex = -1;
                 KeyValuePair min;
-                for (int currentFile = 0; currentFile < numFiles; ++currentFile)
+                for (uint32 currentFile = 0; currentFile < numFiles; ++currentFile)
                 {
                     if (bufferSizes[currentFile] == 0)
                     {

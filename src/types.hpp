@@ -21,9 +21,9 @@ namespace mr
 
     typedef std::function<bool(const KeyValuePair&, const KeyValuePair&)> Comparator;
 
-    const uint32 KILOBYTE = 1024;
-    const uint32 MEGABYTE = 1024 * KILOBYTE;
-    const uint32 GIGABYTE = 1024 * MEGABYTE;
+    const uint64 KILOBYTE = 1024;
+    const uint64 MEGABYTE = 1024 * KILOBYTE;
+    const uint64 GIGABYTE = 1024 * MEGABYTE;
 }
 
 #endif

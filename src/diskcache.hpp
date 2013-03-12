@@ -25,7 +25,7 @@ namespace mr
         typedef DiskCacheIterator Iterator;
 
         UnsortedDiskCache(std::string baseFilename_, uint64 maxSize_);
-        ~UnsortedDiskCache();
+        virtual ~UnsortedDiskCache();
 
         virtual void submit(bytelist&, bytelist&);
         virtual void submit(KeyValuePair&);

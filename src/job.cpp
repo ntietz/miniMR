@@ -96,11 +96,15 @@ namespace mr
         delete [] mapThreads;
 
         std::cout << std::endl;
-        std::cout << "All mappers finished. Starting reducers...\n";
+        std::cout << "All mappers finished. Sorting reducer input...\n";
         std::cout << std::endl;
 
-        DiskCacheIterator mapperOutputIterator = mapperDiskCache->getIterator( (uint64) (0.05f * memoryLimit));
+        //DiskCacheIterator mapperOutputIterator = mapperDiskCache->getIterator( (uint64) (0.05f * memoryLimit));
+        DiskCacheIterator mapperOutputIterator = mapperDiskCache->getIterator(memoryLimit);
         ReducerInput reducerInput(&mapperOutputIterator);
+
+        std::cout << "Input sorted. Starting reducers...\n";
+        std::cout << std::endl;
 
         std::thread* reduceThreads = new std::thread[numReducers];
         for (uint32 i = 0; i < numReducers; ++i)

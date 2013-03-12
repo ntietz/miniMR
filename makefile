@@ -10,7 +10,7 @@
 
 COMPILER=g++
 # COMPILER=clang
-COMPILE_OPTS= -std=c++11 -I${SRC} -Ilib -Wall -g
+COMPILE_OPTS= -std=c++11 -I${SRC} -Ilib -Wall -O3 -g
 SRC=src
 BIN=bin
 
