@@ -1,5 +1,8 @@
 #include "beer_util.hpp"
 
+#include <vector>
+#include <algorithm>
+
 void mapFunction( KeyValuePair& pair
                 , OutputCollector* collector
                 )
@@ -17,7 +20,7 @@ void mapFunction( KeyValuePair& pair
     result.key[outputString.size()] = '\0';
 
     result.value.resize(sizeof(float));
-    *((float*) result.value.data()) = review.taste;
+    *((float*) result.value.data()) = review.overall;
 
     collector->collect(result);
 }
@@ -29,20 +32,25 @@ void reduceFunction( bytelist& key
 {
     KeyValuePair result;
 
+    uint32 size = values.size();
     float total = 0.0f;
     for (uint32 i = 0; i < values.size(); ++i)
     {
         float& score = *((float*) values[i].data());
-        total += score;
+        if (score > 0.0001f)
+            total += score;
+        else
+            --size;
     }
 
-    float average = total / values.size();
+    float average = total / size;
 
     result.key = key;
     result.value.resize(sizeof(float));
     *((float*) result.value.data()) = average;
 
-    collector->collect(result);
+    if (values.size() >= 100)
+        collector->collect(result);
 }
 
 void print(std::ostream& out, KeyValuePair& pair)
@@ -83,10 +91,23 @@ int main(int argc, char** argv)
 
     UnsortedDiskCache* resultCache = job.getResults();
     DiskCacheIterator resultIterator = resultCache->getIterator(memoryLimit);
+
+    std::vector<std::pair<float, std::string>> results;
+
     while (resultIterator.hasNext())
     {
         KeyValuePair pair = resultIterator.getNext();
-        print(out, pair);
+        float& score = *((float*)pair.value.data());
+        std::string name(pair.key.data());
+        results.push_back(std::pair<float,std::string>(score,name));
+        //print(out, pair);
+    }
+
+    std::sort(results.begin(), results.end());
+
+    for (auto& each : results)
+    {
+        out << each.second << ": " << each.first << std::endl;
     }
 
     delete mapperInput;

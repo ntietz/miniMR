@@ -174,34 +174,79 @@ struct BeerReview
         getline(record, name);
 
         record >> field;
-        record >> beerId;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> beerId;
+        }
 
         record >> field;
-        record >> brewerId;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> brewerId;
+        }
 
         record >> field;
-        record >> ABV;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> ABV;
+        }
 
         record >> field;
         getline(record, style);
 
         record >> field;
-        record >> appearance;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> appearance;
+        }
 
         record >> field;
-        record >> aroma;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> aroma;
+        }
 
         record >> field;
-        record >> palate;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> palate;
+        }
 
         record >> field;
-        record >> taste;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> taste;
+        }
 
         record >> field;
-        record >> overall;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> overall;
+        }
 
         record >> field;
-        record >> time;
+        {
+            std::string line;
+            getline(record, line);
+            std::stringstream sstream(line);
+            sstream >> time;
+        }
 
         record >> field;
         getline(record, reviewerName);
