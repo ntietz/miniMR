@@ -96,11 +96,12 @@ int main(int argc, char** argv)
 
     while (resultIterator.hasNext())
     {
-        KeyValuePair pair = resultIterator.getNext();
-        float& score = *((float*)pair.value.data());
-        std::string name(pair.key.data());
+        KeyValuePair* pair = resultIterator.getNext();
+        float& score = *((float*)pair->value.data());
+        std::string name(pair->key.data());
         results.push_back(std::pair<float,std::string>(score,name));
         //print(out, pair);
+        delete pair;
     }
 
     std::sort(results.begin(), results.end());

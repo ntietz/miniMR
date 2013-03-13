@@ -68,15 +68,15 @@ namespace mr
         ~DiskCacheIterator();
 
         bool hasNext();
-        KeyValuePair getNext();
-        KeyValuePair& peek();
+        KeyValuePair* getNext();
+        KeyValuePair* peek();
 
       protected:
         std::string baseFilename;
         uint32 numFiles;
         uint64 maxSize;
 
-        std::vector<KeyValuePair> contents;
+        std::vector<KeyValuePair*> contents;
         uint64 size;
 
         virtual void populateCache();

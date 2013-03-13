@@ -127,20 +127,20 @@ namespace mr
         }
     }
 
-    KeyValuePair DiskCacheIterator::getNext()
+    KeyValuePair* DiskCacheIterator::getNext()
     {
         if (!hasNext())
         {
             throw "EMPTY CACHE"; // TODO FIXME throw a real exception
         }
 
-        KeyValuePair result = contents.back();
+        KeyValuePair* result = contents.back();
         contents.pop_back();
-        size -= (result.key.size() + result.value.size());
+        size -= (result->key.size() + result->value.size());
         return result;
     }
 
-    KeyValuePair& DiskCacheIterator::peek()
+    KeyValuePair* DiskCacheIterator::peek()
     {
         return contents.back();
     }
@@ -164,19 +164,19 @@ namespace mr
 
             while (numRemaining > 0 && size < maxSize)
             {
+                KeyValuePair* pair = new KeyValuePair();
+
                 uint32 keySize;
                 in->read((char*) &keySize, sizeof(uint32));
-                bytelist key(keySize);
-                key.resize(keySize);
-                in->read(key.data(), keySize);
+                pair->key.resize(keySize);
+                in->read(pair->key.data(), keySize);
 
                 uint32 valueSize;
                 in->read((char*) &valueSize, sizeof(uint32));
-                bytelist value(valueSize);
-                value.resize(valueSize);
-                in->read(value.data(), valueSize);
+                pair->value.resize(valueSize);
+                in->read(pair->value.data(), valueSize);
 
-                contents.push_back(KeyValuePair(key,value));
+                contents.push_back(pair);
                 size += keySize;
                 size += valueSize;
                 --numRemaining;

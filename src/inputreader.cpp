@@ -31,11 +31,13 @@ namespace mr
             if (iterator->hasNext())
             {
                 values.clear();
-                key = iterator->peek().key;
+                key = iterator->peek()->key;
 
-                while (iterator->hasNext() && iterator->peek().key == key)
+                while (iterator->hasNext() && iterator->peek()->key == key)
                 {
-                    values.push_back(iterator->getNext().value);
+                    KeyValuePair* next = iterator->getNext();
+                    values.push_back(next->value);
+                    delete next;
                 }
 
                 result = true;

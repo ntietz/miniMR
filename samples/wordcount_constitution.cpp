@@ -104,9 +104,9 @@ int main(int argc, char** argv)
     std::string mostFrequent;
     while (resultIterator.hasNext())
     {
-        KeyValuePair pair = resultIterator.getNext();
-        char* word = pair.key.data();
-        int& count = *((int*) pair.value.data());
+        KeyValuePair* pair = resultIterator.getNext();
+        char* word = pair->key.data();
+        int& count = *((int*) pair->value.data());
         if (count > max)
         {
             max = count;
@@ -114,6 +114,7 @@ int main(int argc, char** argv)
         }
 
         out << word << "," << count << std::endl;
+        delete pair;
     }
 
     std::cout << "Most frequent: " << mostFrequent << ", " << max << std::endl;

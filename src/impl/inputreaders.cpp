@@ -161,11 +161,7 @@ namespace mr
         }
         else
         {
-            KeyValuePair pair = iterator->getNext();
-            KeyValuePair* result = new KeyValuePair();
-            result->key.swap(pair.key);
-            result->value.swap(pair.value);
-            return result;
+            return iterator->getNext();
         }
     }
 }
