@@ -38,8 +38,9 @@ TEST(DiskCacheTest, UnsortedDiskCacheProperties)
     for (int index = 0; index < submittedPairs.size(); ++index)
     {
         ASSERT_TRUE(iterator.hasNext());
-        mr::KeyValuePair pair = iterator.getNext();
-        EXPECT_EQ(submittedPairs[index], pair);
+        mr::KeyValuePair* pair = iterator.getNext();
+        EXPECT_EQ(submittedPairs[index], *pair);
+        delete pair;
     }
 
     ASSERT_FALSE(iterator.hasNext());
@@ -50,7 +51,7 @@ TEST(DiskCacheTest, SortedDiskCacheProperties)
     mr::SortedDiskCache cache(std::string("barfoo"), 1024, compare);
 
     std::vector<mr::KeyValuePair> submittedPairs;
-    std::vector<mr::KeyValuePair> receivedPairs;
+    std::vector<mr::KeyValuePair*> receivedPairs;
 
     for (int i = 0; i < 2048; ++i)
     {
@@ -79,6 +80,11 @@ TEST(DiskCacheTest, SortedDiskCacheProperties)
     int sorted = 0;
     for (int index = 0; index < receivedPairs.size() - 1; ++index)
     {
-        EXPECT_TRUE(compare(receivedPairs[index], receivedPairs[index+1]) || equal(receivedPairs[index], receivedPairs[index+1]));
+        EXPECT_TRUE(compare(*receivedPairs[index], *receivedPairs[index+1]) || equal(*receivedPairs[index], *receivedPairs[index+1]));
+    }
+
+    for (auto*& each : receivedPairs)
+    {
+        delete each;
     }
 }

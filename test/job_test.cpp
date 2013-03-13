@@ -73,7 +73,7 @@ TEST(JobTest, IntegrationTest)
                                           , mr::OutputCollector* collector
                                           )
     {
-        for (int i = 0; i < values.size(); ++i)
+        for (mr::uint32 i = 0; i < values.size(); ++i)
         {
             mr::KeyValuePair pair(key, values[i]);
             collector->collect(pair);
@@ -97,13 +97,18 @@ TEST(JobTest, IntegrationTest)
     mr::UnsortedDiskCache* resultCache = job.getResults();
     mr::DiskCacheIterator resultIterator = resultCache->getIterator(102400);
 
-    std::vector<mr::KeyValuePair> results;
+    std::vector<mr::KeyValuePair*> results;
     while (resultIterator.hasNext())
     {
         results.push_back(resultIterator.getNext());
     }
 
     ASSERT_EQ(LIMIT, results.size());
+
+    for (auto*& each : results)
+    {
+        delete each;
+    }
 
     delete mapperInput;
     delete resultCache;
