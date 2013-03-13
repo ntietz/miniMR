@@ -2,6 +2,7 @@
 #define _INPUTREADERS_HPP_
 
 #include "inputreader.hpp"
+#include "diskcache.hpp"
 #include <fstream>
 
 namespace mr
@@ -48,6 +49,18 @@ namespace mr
         std::string filename;
         char delimiter;
         std::ifstream in;
+    };
+
+    class DiskCacheReader : public MapperInput
+    {
+      public:
+        DiskCacheReader(DiskCacheIterator* iterator_);
+        ~DiskCacheReader();
+
+      protected:
+        KeyValuePair* getNext();
+
+        DiskCacheIterator* iterator;
     };
 }
 

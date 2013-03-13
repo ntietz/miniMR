@@ -29,7 +29,7 @@ init :
 
 compile : clean init mapreduce
 
-samples : compile wordcount beer_stats
+samples : compile wordcount beer_prepare beer_stats
 
 run_tests : tests
 	bin/tests.out
@@ -64,7 +64,10 @@ wordcount :
 	${COMPILER} ${COMPILE_OPTS} samples/wordcount_constitution.cpp bin/*.o -o ${BIN}/wordcount.out
 
 beer_stats :
-	${COMPILER} ${COMPILE_OPTS} samples/beer_stats.cpp bin/*.o -o ${BIN}/beer_stats.out
+	${COMPILER} ${COMPILE_OPTS} -Isamples samples/beer_stats.cpp bin/*.o -o ${BIN}/beer_stats.out
+
+beer_prepare :
+	${COMPILER} ${COMPILE_OPTS} -Isamples samples/beer_prepare.cpp bin/*.o -o ${BIN}/beer_prepare.out
 
 gtest-all.o : ${GTEST_SRCS}
 	${COMPILER} ${TEST_FLAGS} -c ${GTEST_DIR}/src/gtest-all.cc

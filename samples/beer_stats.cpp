@@ -1,177 +1,24 @@
-#include "job.hpp"
-#include "types.hpp"
-#include "mapper.hpp"
-#include "reducer.hpp"
-#include "diskcache.hpp"
-#include "diskcache.hpp"
-#include "inputreader.hpp"
-#include "impl/inputreaders.hpp"
-
-#include <iostream>
-#include <string>
-#include <sstream>
-
-using namespace mr;
-
-struct BeerReview
-{
-    std::string name;
-    uint32 beerId;
-    uint32 brewerId;
-    float ABV;
-    std::string style;
-    float appearance;
-    float aroma;
-    float palate;
-    float taste;
-    float overall;
-    uint32 time;
-    std::string reviewerName;
-    std::string reviewText;
-
-    uint32 getSize()
-    {
-        return 3 * sizeof(uint32)
-             + 6 * sizeof(float)
-             + 4 * sizeof(uint32)
-             + name.size()
-             + style.size()
-             + reviewerName.size()
-             + reviewText.size()
-             + 4;
-    }
-
-    void serialize(bytelist& bytes)
-    {
-        bytes.resize(getSize());
-        int8* ptr = bytes.data();
-
-        *((uint32*) ptr) = beerId;
-        ptr += sizeof(uint32);
-
-        *((uint32*) ptr) = brewerId;
-        ptr += sizeof(uint32);
-
-        *((uint32*) ptr) = time;
-        ptr += sizeof(uint32);
-
-        *((float*) ptr) = ABV;
-        ptr += sizeof(float);
-
-        *((float*) ptr) = appearance;
-        ptr += sizeof(float);
-
-        *((float*) ptr) = aroma;
-        ptr += sizeof(float);
-
-        *((float*) ptr) = palate;
-        ptr += sizeof(float);
-
-        *((float*) ptr) = taste;
-        ptr += sizeof(float);
-
-        *((float*) ptr) = overall;
-        ptr += sizeof(float);
-
-        *((uint32*) ptr) = name.size() + 1;
-        ptr += sizeof(uint32);
-        for (int i = 0; i < name.size(); ++i, ++ptr)
-        {
-            *ptr = name[i];
-        }
-        *ptr = '\0';
-        ++ptr;
-
-        *((uint32*) ptr) = style.size() + 1;
-        ptr += sizeof(uint32);
-        for (int i = 0; i < style.size(); ++i, ++ptr)
-        {
-            *ptr = style[i];
-        }
-        *ptr = '\0';
-        ++ptr;
-
-        *((uint32*) ptr) = reviewerName.size() + 1;
-        ptr += sizeof(uint32);
-        for (int i = 0; i < reviewerName.size(); ++i, ++ptr)
-        {
-            *ptr = reviewerName[i];
-        }
-        *ptr = '\0';
-        ++ptr;
-
-        *((uint32*) ptr) = reviewText.size() + 1;
-        ptr += sizeof(uint32);
-        for (int i = 0; i < reviewText.size(); ++i, ++ptr)
-        {
-            *ptr = reviewText[i];
-        }
-        *ptr = '\0';
-        ++ptr;
-    }
-
-    void deserialize(bytelist& bytes)
-    {
-        // TODO implement this
-    }
-
-    void fromStringStream(std::stringstream& record)
-    {
-        std::string field;
-
-        record >> field;
-        getline(record, name);
-
-        record >> field;
-        record >> beerId;
-
-        record >> field;
-        record >> brewerId;
-
-        record >> field;
-        record >> ABV;
-
-        record >> field;
-        getline(record, style);
-
-        record >> field;
-        record >> appearance;
-
-        record >> field;
-        record >> aroma;
-
-        record >> field;
-        record >> palate;
-
-        record >> field;
-        record >> taste;
-
-        record >> field;
-        record >> overall;
-
-        record >> field;
-        record >> time;
-
-        record >> field;
-        getline(record, reviewerName);
-
-        record >> field;
-        getline(record, reviewText);
-    }
-};
+#include "beer_util.hpp"
 
 void mapFunction( KeyValuePair& pair
                 , OutputCollector* collector
                 )
 {
-    std::stringstream record(pair.value.data());
+    //uint32& beerId = *((uint32*) pair.key.data());
     BeerReview review;
-    review.fromStringStream(record);
+    review.deserialize(pair.value);
 
     KeyValuePair result;
-    uint32 size = review.getSize();
-    review.serialize(result.key);
-    review.serialize(result.value);
+
+    std::string outputString = review.name;
+    result.key.resize(outputString.size() + 1);
+    for (uint32 i = 0; i < outputString.size(); ++i)
+        result.key[i] = outputString[i];
+    result.key[outputString.size()] = '\0';
+
+    result.value.resize(sizeof(float));
+    *((float*) result.value.data()) = review.taste;
+
     collector->collect(result);
 }
 
@@ -180,14 +27,27 @@ void reduceFunction( bytelist& key
                    , OutputCollector* collector
                    )
 {
+    KeyValuePair result;
 
+    float total = 0.0f;
+    for (uint32 i = 0; i < values.size(); ++i)
+    {
+        float& score = *((float*) values[i].data());
+        total += score;
+    }
+
+    float average = total / values.size();
+
+    result.key = key;
+    result.value.resize(sizeof(float));
+    *((float*) result.value.data()) = average;
+
+    collector->collect(result);
 }
 
-bool comparator( const KeyValuePair& left
-               , const KeyValuePair& right
-               )
+void print(std::ostream& out, KeyValuePair& pair)
 {
-    return left.key < right.key;
+    out << pair.key.data() << ": " << *((float*)pair.value.data()) << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -196,10 +56,10 @@ int main(int argc, char** argv)
     uint32 numMappers = 4;
     uint32 numReducers = 4;
 
-    if (argc < 4)
+    if (argc < 3)
     {
         std::cout << "Usage:" << std::endl
-                  << "  beer_stats num_mappers num_reducers data_filename" << std::endl;
+                  << "  beer_stats num_mappers num_reducers" << std::endl;
         return 1;
     }
 
@@ -213,15 +73,23 @@ int main(int argc, char** argv)
         sstream >> numReducers;
     }
 
-    std::cout << "Memory limit: " << memoryLimit << " bytes." << std::endl;
-    std::cout << "Num mappers:  " << numMappers << std::endl;
-    std::cout << "Num reducers: " << numReducers << std::endl;
-    std::cout << std::endl;
+    DiskCacheIterator beerData("beerdata", 1, memoryLimit / 10);
+    MapperInput* mapperInput = new DiskCacheReader(&beerData);
 
-    char* filename = argv[3];
-    MapperInput* mapperInput = new ParagraphInputReader(filename);
-
-    MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, comparator, mapperInput, memoryLimit);
+    MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, lexicographicalCompare, mapperInput, memoryLimit);
     job.run();
+
+    std::ofstream out("results.txt");
+
+    UnsortedDiskCache* resultCache = job.getResults();
+    DiskCacheIterator resultIterator = resultCache->getIterator(memoryLimit);
+    while (resultIterator.hasNext())
+    {
+        KeyValuePair pair = resultIterator.getNext();
+        print(out, pair);
+    }
+
+    delete mapperInput;
+    delete job.getResults();
 }
 

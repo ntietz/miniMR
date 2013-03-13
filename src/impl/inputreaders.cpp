@@ -142,5 +142,31 @@ namespace mr
             return NULL;
         }
     }
+
+    DiskCacheReader::DiskCacheReader(DiskCacheIterator* iterator_)
+    {
+        iterator = iterator_;
+    }
+
+    DiskCacheReader::~DiskCacheReader()
+    {
+        // ...
+    }
+
+    KeyValuePair* DiskCacheReader::getNext()
+    {
+        if (!iterator->hasNext())
+        {
+            return NULL;
+        }
+        else
+        {
+            KeyValuePair pair = iterator->getNext();
+            KeyValuePair* result = new KeyValuePair();
+            result->key.swap(pair.key);
+            result->value.swap(pair.value);
+            return result;
+        }
+    }
 }
 
