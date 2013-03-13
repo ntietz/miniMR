@@ -12,6 +12,7 @@ namespace mr
     class MapperInput
     {
       public:
+        MapperInput();
         virtual ~MapperInput() { }
         KeyValuePair* requestNext();
 

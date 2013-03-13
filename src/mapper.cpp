@@ -19,7 +19,7 @@ namespace mr
     {
         KeyValuePair* kvpair = input->requestNext();
 
-        while (kvpair != 0)
+        while (kvpair != NULL)
         {
             mapper->submit(*kvpair);
 

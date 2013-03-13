@@ -13,6 +13,11 @@ namespace mr
             return result;
         }
 
+        MapperInput::MapperInput()
+        {
+            readLock.clear();
+        }
+
         ReducerInput::ReducerInput(DiskCacheIterator* iterator_)
         {
             iterator = iterator_;
