@@ -61,7 +61,7 @@ impls :
 	${COMPILER} ${COMPILE_OPTS} ${SRC}/impl/inputreaders.cpp -c -o ${BIN}/inputreaders.o
 
 wordcount :
-	${COMPILER} ${COMPILE_OPTS} samples/wordcount_constitution.cpp bin/*.o -o ${BIN}/wordcount.out
+	${COMPILER} ${COMPILE_OPTS} samples/wordcount.cpp bin/*.o -o ${BIN}/wordcount.out
 
 beer_stats :
 	${COMPILER} ${COMPILE_OPTS} -Isamples samples/beer_stats.cpp bin/*.o -o ${BIN}/beer_stats.out

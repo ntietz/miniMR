@@ -81,15 +81,24 @@ int main(int argc, char** argv)
     uint32 numMappers = 4;
     uint32 numReducers = 4;
 
-    std::mutex outlock;
-
-    if (argc < 2)
+    if (argc < 3)
     {
-        std::cout << "Error: you must provide a filename." << std::endl;
+        std::cout << "Usage:" << std::endl
+                  << "  wordcount num_mappers num_reducers" << std::endl;
         return 1;
     }
 
-    char* filename = argv[1];
+    {
+        char* numMappersStr = argv[1];
+        std::stringstream sstream(numMappersStr);
+        sstream >> numMappers;
+    } {
+        char* numReducersStr = argv[2];
+        std::stringstream sstream(numReducersStr);
+        sstream >> numReducers;
+    }
+
+    char* filename = argv[3];
     MapperInput* mapperInput = new LineInputReader(filename);
     //MapperInput* mapperInput = new LineInputReader("test/data/constitution.txt");
 

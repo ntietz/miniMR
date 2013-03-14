@@ -19,10 +19,20 @@ void mapFunction( KeyValuePair& pair
         result.key[i] = outputString[i];
     result.key[outputString.size()] = '\0';
 
-    result.value.resize(sizeof(float));
-    *((float*) result.value.data()) = review.overall;
+    result.value.resize(0);
 
     collector->collect(result);
+    /*
+    std::string outputString = review.name;
+    result.key.resize(outputString.size() + 1);
+    for (uint32 i = 0; i < outputString.size(); ++i)
+        result.key[i] = outputString[i];
+    result.key[outputString.size()] = '\0';
+
+    result.value.resize(2 * sizeof(float));
+    *((float*) result.value.data()) = review.overall;
+    *((float*) (result.value.data() + sizeof(float))) = review.ABV;
+    */
 }
 
 void reduceFunction( bytelist& key
@@ -32,6 +42,12 @@ void reduceFunction( bytelist& key
 {
     KeyValuePair result;
 
+    uint32 size = values.size();
+
+    result.key = key;
+    result.value.resize(sizeof(uint32));
+    *((uint32*) result.value.data()) = size;
+    /*
     uint32 size = values.size();
     float total = 0.0f;
     for (uint32 i = 0; i < values.size(); ++i)
@@ -45,11 +61,15 @@ void reduceFunction( bytelist& key
 
     float average = total / size;
 
-    result.key = key;
-    result.value.resize(sizeof(float));
-    *((float*) result.value.data()) = average;
+    float& ABV = *((float*) (values[0].data() + sizeof(float)));
 
-    if (values.size() >= 100)
+    result.key = key;
+    result.value.resize(2 * sizeof(float));
+    *((float*) result.value.data()) = average;
+    *((float*) (result.value.data() + sizeof(float))) = ABV;
+    */
+
+    //if (values.size() >= 100)
         collector->collect(result);
 }
 
@@ -92,14 +112,17 @@ int main(int argc, char** argv)
     UnsortedDiskCache* resultCache = job.getResults();
     DiskCacheIterator resultIterator = resultCache->getIterator(memoryLimit);
 
-    std::vector<std::pair<float, std::string>> results;
+    //std::vector<std::pair<std::pair<float,float>, std::string>> results;
+    std::vector<std::pair<uint32, std::string>> results;
 
     while (resultIterator.hasNext())
     {
         KeyValuePair* pair = resultIterator.getNext();
-        float& score = *((float*)pair->value.data());
+        //float& score = *((float*)pair->value.data());
+        //float& ABV = *((float*)(pair->value.data() + sizeof(float)));
         std::string name(pair->key.data());
-        results.push_back(std::pair<float,std::string>(score,name));
+        uint32& num = *((uint32*) (pair->value.data()));
+        results.push_back(std::pair<uint32,std::string>(num,name));
         //print(out, pair);
         delete pair;
     }
@@ -108,6 +131,7 @@ int main(int argc, char** argv)
 
     for (auto& each : results)
     {
+        //out << each.second << ": " << each.first.first << ", " << each.first.second << std::endl;
         out << each.second << ": " << each.first << std::endl;
     }
 
