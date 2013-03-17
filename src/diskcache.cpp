@@ -351,14 +351,6 @@ namespace mr
             for (uint32 currentFile = 0; currentFile < numFiles; ++currentFile)
             {
                 fillBuffer(currentFile);
-                int numSorted = 0;
-                for (uint32 i = 0; i < buffers[currentFile].size(); ++i)
-                {
-                    if (comparator(buffers[currentFile][i], buffers[currentFile][i+1]))
-                    {
-                        ++numSorted;
-                    }
-                }
             }
 
             bool allEmpty = false;

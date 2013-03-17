@@ -80,6 +80,7 @@ void print(std::ostream& out, KeyValuePair& pair)
 
 int main(int argc, char** argv)
 {
+    //uint64 memoryLimit = 8 * KILOBYTE;
     uint64 memoryLimit = 4 * GIGABYTE;
     uint32 numMappers = 4;
     uint32 numReducers = 4;
@@ -101,7 +102,7 @@ int main(int argc, char** argv)
         sstream >> numReducers;
     }
 
-    DiskCacheIterator beerData("beerdata", 1, memoryLimit / 10);
+    DiskCacheIterator beerData("beerdata", 1, memoryLimit);// / 10);
     MapperInput* mapperInput = new DiskCacheReader(&beerData);
 
     MapReduceJob job(numMappers, mapFunction, numReducers, reduceFunction, lexicographicalCompare, mapperInput, memoryLimit);
